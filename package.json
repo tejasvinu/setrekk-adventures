@@ -9,6 +9,7 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@vercel/analytics": "^1.4.1",
     "clipboard": "^2.0.11",
     "mongodb": "^4.10.0",
     "next": "15.1.4",
