@@ -27,7 +27,7 @@ export default function TripContent({ id }: TripContentProps) {
     
     clipboard.on('success', function (e) {
       const successText = e.trigger.getAttribute('data-clipboard-success-text');
-      const successElement = e.trigger.querySelector('.js-clipboard-success-text');
+      const successElement = e.trigger.querySelector('.js-clipboard-success-text') as HTMLElement;
       if (successElement) {
         successElement.innerText = successText || 'Copied!';
       }
@@ -162,7 +162,13 @@ export default function TripContent({ id }: TripContentProps) {
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-4 p-4">
           {trip.hotels?.map((hotel, index) => (
             <div key={index} className="bg-white rounded-lg overflow-hidden shadow-lg transform transition duration-500 hover:scale-105">
-              <img src={hotel.photo} alt={hotel.name} className="w-full h-48 object-cover"/>
+              <Image
+                src={hotel.photo}
+                alt={hotel.name}
+                width={400}
+                height={300}
+                className="w-full h-48 object-cover"
+              />
               <div className="p-4">
                 <h2 className="text-xl font-bold mb-2 text-gray-800">{hotel.name}</h2>
                 <p className="text-gray-600 text-sm mb-2">
@@ -240,10 +246,12 @@ export default function TripContent({ id }: TripContentProps) {
                     .map((image) => (
                       <div key={image._id} className="group relative h-96 w-full overflow-hidden rounded-lg shadow-md">
                         <div className="absolute left-0 top-0 h-full w-full transition-all duration-300 ease-in-out group-hover:-top-96">
-                          <img 
-                            className="h-4/6 w-full object-cover" 
-                            src={image.imageUrl} 
+                          <Image
+                            className="h-4/6 w-full object-cover"
+                            src={image.imageUrl}
                             alt={image.description || ''}
+                            width={400}
+                            height={300}
                           />
                           <div className="mt-5 px-4 text-center">
                             <h2 className="text-4xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-gray-600 via-slate-400 to-stone-500">

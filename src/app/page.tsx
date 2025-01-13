@@ -49,7 +49,7 @@ export default function Home() {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             {latestTrips.map((trip) => (
               <div
-                key={trip._id}
+                key={trip._id?.toString()}
                 className="group relative h-[400px] overflow-hidden rounded-lg"
               >
                 <Image

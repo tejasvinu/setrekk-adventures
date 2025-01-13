@@ -1,3 +1,5 @@
+import { ObjectId } from "mongodb";
+
 export interface Hotel {
   name: string;
   location: string;
@@ -25,34 +27,19 @@ export interface Booking {
 }
 
 export interface UnifiedTrip {
-  _id: string;
+  _id?: string | ObjectId;
   destination: string;
-  startDate: string;
-  endDate: string;
+  startDate: string | Date;
+  endDate: string | Date;
   price: number;
   fullPrice: number;
   capacity: number;
   tripImage: string;
   weekNumber: number;
-  hotels?: {
-    name: string;
-    location: string;
-    description: string;
-    photo: string;
-    amenities?: string[];
-  }[];
-  itinerary?: {
-    _id: string;
-    paragraphs: string[];
-  }[];
-  images?: {
-    _id: string;
-    imageUrl: string;
-    title: string;
-    description: string;
-    day: number;
-  }[];
-  bookings?: any[];
-  createdAt?: string;
-  updatedAt?: string;
+  hotels: Hotel[];
+  itinerary: ItineraryDay[];
+  images: TripImage[];
+  bookings?: Booking[];
+  createdAt?: string | Date;
+  updatedAt?: string | Date;
 }

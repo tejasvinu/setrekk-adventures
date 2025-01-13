@@ -35,8 +35,8 @@ export async function GET(
     };
 
     return NextResponse.json(formattedTrip);
-  } catch (error) {
-    return NextResponse.json({ error: "Failed to fetch trip" }, { status: 500 });
+  } catch (error: any) {
+    return NextResponse.json({ error: `Failed to fetch trip: ${error.message}` }, { status: 500 });
   }
 }
 
@@ -51,8 +51,8 @@ export async function PUT(
     const db = client.db("setrekk");
     const updates: Partial<UnifiedTrip> = await request.json();
 
-    if (updates.startDate) updates.startDate = new Date(updates.startDate);
-    if (updates.endDate) updates.endDate = new Date(updates.endDate);
+    if (updates.startDate) updates.startDate = new Date(updates.startDate).toISOString();
+    if (updates.endDate) updates.endDate = new Date(updates.endDate).toISOString();
 
     const result = await db.collection("trip").updateOne(
       { _id: new ObjectId(id) },

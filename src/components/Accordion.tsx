@@ -1,9 +1,9 @@
-import  { useState } from "react";
+import { useState } from "react";
 
 const AccordionComponent = () => {
-    const [activeAccordion, setActiveAccordion] = useState(null);
+    const [activeAccordion, setActiveAccordion] = useState<number | null>(null);
 
-    const toggleAccordion = (index) => {
+    const toggleAccordion = (index: number): void => {
         setActiveAccordion(activeAccordion === index ? null : index);
     };
 
@@ -102,8 +102,9 @@ const AccordionComponent = () => {
     return (
         <div className="w-full p-4">
             {accordionItems.map((item, index) => (
-                <div key={index} className="border border-gray-300 rounded-lg shadow-lg mb-4">
+                <div key={`accordion-${index}`} className="border border-gray-300 rounded-lg shadow-lg mb-4">
                     <button
+                        type="button"
                         className="w-full flex justify-between items-center px-6 py-4 bg-gray-100 border-b border-gray-300 focus:outline-none hover:bg-gray-200"
                         onClick={() => toggleAccordion(index)}
                     >
@@ -129,7 +130,9 @@ const AccordionComponent = () => {
                     >
                         <ul className="list-disc list-inside text-gray-700">
                             {item.content.map((itemContent, i) => (
-                                <li className="mb-2 text-lg font-semibold text-gray-700" key={i}>{itemContent}</li>
+                                <li className="mb-2 text-lg font-semibold text-gray-700" key={`content-${index}-${i}`}>
+                                    {itemContent}
+                                </li>
                             ))}
                         </ul>
                     </div>
