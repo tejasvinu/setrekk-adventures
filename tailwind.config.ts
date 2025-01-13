@@ -12,6 +12,12 @@ export default {
         background: "var(--background)",
         foreground: "var(--foreground)",
       },
+      screens: {
+        'custom': '1550px', // Define your custom breakpoint size
+      },
+      backgroundImage: {
+        'mountains': "url('/mountains.svg')",
+      },
     },
   },
   plugins: [],
