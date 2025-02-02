@@ -1,11 +1,14 @@
 import { Suspense } from "react";
 import ClientWrapper from './ClientWrapper';
 
-interface PageProps {
-  params: { id: string };
+interface Props {
+  params: Promise<{ id: string }>;
+  searchParams?: Promise<{ [key: string]: string | string[] | undefined }>; // updated type
 }
 
-export default function TripDetail({ params }: PageProps) {
+export default async function TripDetail({ params }: Props) {
+  const resolvedParams = await params;
+  
   return (
     <Suspense fallback={
       <div className="min-h-screen bg-slate-900 flex items-center justify-center">
@@ -15,7 +18,7 @@ export default function TripDetail({ params }: PageProps) {
         </div>
       </div>
     }>
-      <ClientWrapper id={params.id} />
+      <ClientWrapper id={resolvedParams.id} />
     </Suspense>
   );
 }

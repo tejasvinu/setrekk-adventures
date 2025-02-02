@@ -1,7 +1,7 @@
 "use client"
 import dynamic from 'next/dynamic';
 
-const Accordion = dynamic(() => import('./Accordion'), {
+const AccordionComponent = dynamic(() => import('@/components/Accordion/Accordion'), {
   ssr: false,
   loading: () => (
     <div className="w-full max-w-4xl mx-auto px-4 space-y-4">
@@ -15,4 +15,4 @@ const Accordion = dynamic(() => import('./Accordion'), {
   )
 });
 
-export default Accordion;
+export default AccordionComponent;

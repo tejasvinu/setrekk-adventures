@@ -52,4 +52,5 @@ export const MountainCutout = () => (
   </div>
 );
 
-export default MountainLoader;
+// Removed the following line:
+// export default MountainLoader;

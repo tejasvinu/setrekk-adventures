@@ -6,8 +6,8 @@ import { Suspense } from 'react';
 import { Montserrat } from 'next/font/google';
 
 // Direct imports instead of using the index
-import NavBar from '@/components/NavBar';
-import Footer from '@/components/Footer';
+import NavBar from '@/components/NavBar/NavBar';
+import Footer from '@/components/Footer/Footer';
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
