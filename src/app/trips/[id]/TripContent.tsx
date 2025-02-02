@@ -18,6 +18,12 @@ export default function TripContent({ id }: TripContentProps) {
   const [error, setError] = useState<string | null>(null);
   const [showPopup, setShowPopup] = useState(false);
   const [activeAccordion, setActiveAccordion] = useState<number | null>(null);
+  const [formData, setFormData] = useState({
+    name: '',
+    email: '',
+    phone: '',
+    message: ''
+  });
 
   // Add clipboard initialization with target support
   useEffect(() => {
@@ -74,6 +80,17 @@ export default function TripContent({ id }: TripContentProps) {
   const toggleAccordion = (index: number) => {
     console.log('Toggling accordion:', index);
     setActiveAccordion(activeAccordion === index ? null : index);
+  };
+
+  const handleFormSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    // Add your form submission logic here
+    console.log('Form submitted:', formData);
+    setShowPopup(false);
+  };
+
+  const handleClosePopup = () => {
+    setShowPopup(false);
   };
 
   // Loading and error states remain the same
@@ -318,8 +335,82 @@ export default function TripContent({ id }: TripContentProps) {
             {/* Contact Popup */}
             {showPopup && (
               <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-50 p-4">
-                <div className="bg-slate-800 rounded-lg p-4 md:p-6 w-full max-w-md mx-auto">
-                  {/* ...existing popup content... */}
+                <div className="bg-slate-800 rounded-lg p-6 w-full max-w-md mx-auto relative">
+                  <h2 className="text-2xl font-bold text-white mb-6">
+                    Contact us on WhatsApp to book via one of the below numbers
+                  </h2>
+
+                  <div className="space-y-6">
+                    <div>
+                      <h3 className="text-xl font-bold text-white mb-2">Contact Tejas:</h3>
+                      <button
+                        type="button"
+                        className="js-clipboard hs-tooltip w-40 py-3 px-4 inline-flex justify-center items-center gap-x-2 text-sm font-mono rounded-lg border border-slate-600 bg-slate-700 text-white hover:bg-slate-600"
+                        data-clipboard-target="#hs-clipboard-tooltip-on-hover-1"
+                        data-clipboard-action="copy"
+                        data-clipboard-success-text="Copied"
+                      >
+                        9606293853
+                        <span className="border-s ps-3.5 border-slate-600">
+                          <svg className="js-clipboard-default w-4 h-4 group-hover:rotate-6 transition" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><rect width="8" height="4" x="8" y="2" rx="1" ry="1"/><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/></svg>
+                          <svg className="js-clipboard-success hidden w-4 h-4 text-emerald-500 rotate-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><polyline points="20 6 9 17 4 12"/></svg>
+                        </span>
+                        <span className="hs-tooltip-content hidden">
+                          <span className="js-clipboard-success-text">Copied!</span>
+                        </span>
+                      </button>
+                      <input type="hidden" id="hs-clipboard-tooltip-on-hover-1" value="9606293853"/>
+                    </div>
+
+                    <div>
+                      <h3 className="text-xl font-bold text-white mb-2">Contact Akash:</h3>
+                      <button
+                        type="button"
+                        className="js-clipboard hs-tooltip w-40 py-3 px-4 inline-flex justify-center items-center gap-x-2 text-sm font-mono rounded-lg border border-slate-600 bg-slate-700 text-white hover:bg-slate-600"
+                        data-clipboard-target="#hs-clipboard-tooltip-on-hover-2"
+                        data-clipboard-action="copy"
+                        data-clipboard-success-text="Copied"
+                      >
+                        9480663613
+                        <span className="border-s ps-3.5 border-slate-600">
+                          <svg className="js-clipboard-default w-4 h-4 group-hover:rotate-6 transition" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><rect width="8" height="4" x="8" y="2" rx="1" ry="1"/><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/></svg>
+                          <svg className="js-clipboard-success hidden w-4 h-4 text-emerald-500 rotate-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><polyline points="20 6 9 17 4 12"/></svg>
+                        </span>
+                        <span className="hs-tooltip-content hidden">
+                          <span className="js-clipboard-success-text">Copied!</span>
+                        </span>
+                      </button>
+                      <input type="hidden" id="hs-clipboard-tooltip-on-hover-2" value="9480663613"/>
+                    </div>
+
+                    <div>
+                      <h3 className="text-xl font-bold text-white mb-2">Email us:</h3>
+                      <button
+                        type="button"
+                        className="js-clipboard hs-tooltip w-72 py-3 px-4 inline-flex justify-center items-center gap-x-2 text-sm font-mono rounded-lg border border-slate-600 bg-slate-700 text-white hover:bg-slate-600"
+                        data-clipboard-target="#hs-clipboard-tooltip-on-hover-3"
+                        data-clipboard-action="copy"
+                        data-clipboard-success-text="Copied"
+                      >
+                        setrekkadvenures@gmail.com
+                        <span className="border-s ps-3.5 border-slate-600">
+                          <svg className="js-clipboard-default w-4 h-4 group-hover:rotate-6 transition" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><rect width="8" height="4" x="8" y="2" rx="1" ry="1"/><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/></svg>
+                          <svg className="js-clipboard-success hidden w-4 h-4 text-emerald-500 rotate-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><polyline points="20 6 9 17 4 12"/></svg>
+                        </span>
+                        <span className="hs-tooltip-content hidden">
+                          <span className="js-clipboard-success-text">Copied!</span>
+                        </span>
+                      </button>
+                      <input type="hidden" id="hs-clipboard-tooltip-on-hover-3" value="setrekkadvenures@gmail.com"/>
+                    </div>
+                  </div>
+
+                  <button
+                    onClick={handleClosePopup}
+                    className="mt-6 w-full py-2 px-4 bg-slate-700 hover:bg-slate-600 text-white rounded-lg transition-colors"
+                  >
+                    Close
+                  </button>
                 </div>
               </div>
             )}

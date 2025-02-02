@@ -1,14 +1,26 @@
 "use client"
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 
 const NavBar = () => {
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+    const [isScrolled, setIsScrolled] = useState(false);
+
+    useEffect(() => {
+        const handleScroll = () => {
+            setIsScrolled(window.scrollY > 20);
+        };
+        window.addEventListener('scroll', handleScroll);
+        return () => window.removeEventListener('scroll', handleScroll);
+    }, []);
+
     const toggleMobileMenu = () => setIsMobileMenuOpen(!isMobileMenuOpen);
 
     return (
-        <nav className="bg-mountains bg-cover bg-center">
+        <nav className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
+            isScrolled ? 'bg-slate-900/95 backdrop-blur-md shadow-lg' : 'bg-transparent'
+        }`}>
             <div className="mx-auto mt-auto max-w-7xl sm:px-6 lg:px-8">
                 <div className="relative flex h-16 items-center justify-between">
                     <div className="absolute inset-y-0 left-0 flex items-center sm:hidden">
@@ -57,13 +69,13 @@ const NavBar = () => {
                             <div className="flex space-x-4 mt-4 pl-8">
                                 <Link 
                                     href="/" 
-                                    className="bg-green-900 text-white rounded-md px-3 py-2 text-sm font-medium"
+                                    className="bg-emerald-600/80 hover:bg-emerald-500 text-white rounded-md px-4 py-2 text-sm font-medium transition-all"
                                 >
                                     Home
                                 </Link>
                                 <Link 
                                     href="/trips"
-                                    className="text-black-300 hover:bg-green-700 hover:text-black rounded-md px-3 py-2 text-sm font-medium"
+                                    className="text-white/80 hover:text-white hover:bg-emerald-600/50 rounded-md px-4 py-2 text-sm font-medium transition-all"
                                 >
                                     Trips
                                 </Link>

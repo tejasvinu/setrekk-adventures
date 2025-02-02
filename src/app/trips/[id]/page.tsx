@@ -1,16 +1,21 @@
 import { Suspense } from "react";
-import TripContent from "./TripContent";
+import ClientWrapper from './ClientWrapper';
 
 interface PageProps {
-  params: Promise<{ id: string }>;
+  params: { id: string };
 }
 
-export default async function TripDetail({ params }: PageProps) {
-  const resolvedParams = await params;
-  
+export default function TripDetail({ params }: PageProps) {
   return (
-    <Suspense fallback={<div className="text-center p-8">Loading...</div>}>
-      <TripContent id={resolvedParams.id} />
+    <Suspense fallback={
+      <div className="min-h-screen bg-slate-900 flex items-center justify-center">
+        <div className="text-center">
+          <div className="w-16 h-16 border-4 border-emerald-500 border-t-transparent rounded-full animate-spin" />
+          <p className="text-emerald-500 mt-4">Loading...</p>
+        </div>
+      </div>
+    }>
+      <ClientWrapper id={params.id} />
     </Suspense>
   );
 }

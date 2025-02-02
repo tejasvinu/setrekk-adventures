@@ -1,26 +1,36 @@
 import { motion } from "framer-motion";
 
 export const MountainLoader = () => (
-  <div className="flex items-center justify-center min-h-[200px]">
-    <motion.div
-      className="w-16 h-16 relative"
-      animate={{
-        scale: [1, 1.2, 1],
-        rotate: [0, 360, 0],
-      }}
-      transition={{
-        duration: 2,
-        repeat: Infinity,
-        ease: "easeInOut",
-      }}
-    >
-      <div className="absolute inset-0">
-        <svg viewBox="0 0 24 24" className="fill-emerald-500">
-          <path d="M22 17L12 7l-10 10h20z" />
-        </svg>
-      </div>
-    </motion.div>
-  </div>
+    <div className="flex items-center justify-center min-h-[200px]">
+        <motion.div
+            className="relative w-24 h-24 flex items-center justify-center"
+            animate={{
+                scale: [1, 1.2, 1],
+                rotate: [0, 360, 0],
+            }}
+            transition={{
+                duration: 3,
+                repeat: Infinity,
+                ease: "easeInOut",
+            }}
+        >
+            <motion.div
+                className="absolute inset-0 bg-emerald-500/20 rounded-full blur-xl"
+                animate={{
+                    scale: [1, 1.5, 1],
+                    opacity: [0.5, 0.2, 0.5],
+                }}
+                transition={{
+                    duration: 2,
+                    repeat: Infinity,
+                    ease: "easeInOut",
+                }}
+            />
+            <svg viewBox="0 0 24 24" className="w-16 h-16 fill-emerald-500">
+                <path d="M22 17L12 7l-10 10h20z" />
+            </svg>
+        </motion.div>
+    </div>
 );
 
 export const DiagonalShape = () => (
@@ -41,3 +51,5 @@ export const MountainCutout = () => (
     </svg>
   </div>
 );
+
+export default MountainLoader;
