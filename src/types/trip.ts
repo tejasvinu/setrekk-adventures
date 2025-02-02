@@ -36,6 +36,8 @@ export interface UnifiedTrip {
   capacity: number;
   tripImage: string;
   weekNumber: number;
+  difficulty?: string;
+  duration?: number;  // Add this line
   hotels: Hotel[];
   itinerary: ItineraryDay[];
   images: TripImage[];

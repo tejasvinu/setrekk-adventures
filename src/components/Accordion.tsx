@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 
 const AccordionComponent = () => {
     const [activeAccordion, setActiveAccordion] = useState<number | null>(null);
@@ -100,43 +101,56 @@ const AccordionComponent = () => {
     ];
 
     return (
-        <div className="w-full p-4">
+        <div className="w-full max-w-4xl mx-auto px-4">
             {accordionItems.map((item, index) => (
-                <div key={`accordion-${index}`} className="border border-gray-300 rounded-lg shadow-lg mb-4">
+                <motion.div
+                    key={`accordion-${index}`}
+                    className="mb-4"
+                >
                     <button
                         type="button"
-                        className="w-full flex justify-between items-center px-6 py-4 bg-gray-100 border-b border-gray-300 focus:outline-none hover:bg-gray-200"
+                        className="w-full flex justify-between items-center p-4 md:p-6 rounded-xl text-left"
                         onClick={() => toggleAccordion(index)}
                     >
-                        <span className="text-gray-700 font-semibold">{item.title}</span>
-                        <svg
-                            className={`w-5 h-5 transition-transform transform ${
-                                activeAccordion === index ? "rotate-180" : ""
-                            }`}
+                        <span className="text-base md:text-lg font-semibold pr-4">{item.title}</span>
+                        <motion.svg
+                            animate={{ rotate: activeAccordion === index ? 180 : 0 }}
+                            className="w-6 h-6 text-emerald-400"
                             viewBox="0 0 20 20"
                             fill="currentColor"
                         >
                             <path
                                 fillRule="evenodd"
-                                d="M6.293 5.293a1 1 0 011.414 0L10 8.586l2.293-2.293a1 1 0 111.414 1.414l-3 3a1 1 0 01-1.414 0l-3-3a1 1 0 010-1.414z"
+                                d="M6.293 5.293a1 1 0 011.414 0L10 8.586l2.293-2.293a1 1 011.414 1.414l-3 3a1 1 01-1.414 0l-3-3a1 1 010-1.414z"
                                 clipRule="evenodd"
                             />
-                        </svg>
+                        </motion.svg>
                     </button>
-                    <div
-                        className={`px-6 py-4 ${
-                            activeAccordion === index ? "block" : "hidden"
-                        }`}
-                    >
-                        <ul className="list-disc list-inside text-gray-700">
-                            {item.content.map((itemContent, i) => (
-                                <li className="mb-2 text-lg font-semibold text-gray-700" key={`content-${index}-${i}`}>
-                                    {itemContent}
-                                </li>
-                            ))}
-                        </ul>
-                    </div>
-                </div>
+                    <AnimatePresence>
+                        {activeAccordion === index && (
+                            <motion.div
+                                className="overflow-hidden"
+                            >
+                                <div className="p-4 md:p-6 bg-slate-800/50 backdrop-blur-sm rounded-b-xl">
+                                    <ul className="space-y-4">
+                                        {item.content.map((itemContent, i) => (
+                                            <motion.li
+                                                initial={{ opacity: 0, x: -20 }}
+                                                animate={{ opacity: 1, x: 0 }}
+                                                transition={{ delay: i * 0.05 }}
+                                                className="flex items-start gap-3 text-slate-300"
+                                                key={`content-${index}-${i}`}
+                                            >
+                                                <span className="mt-1.5 w-1.5 h-1.5 rounded-full bg-emerald-500 shrink-0" />
+                                                <span className="text-base">{itemContent}</span>
+                                            </motion.li>
+                                        ))}
+                                    </ul>
+                                </div>
+                            </motion.div>
+                        )}
+                    </AnimatePresence>
+                </motion.div>
             ))}
         </div>
     );

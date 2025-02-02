@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { UnifiedTrip } from "@/types/trip";
+import { motion } from "framer-motion";
 
 export default function Home() {
   const [latestTrips, setLatestTrips] = useState<UnifiedTrip[]>([]);
@@ -20,108 +21,128 @@ export default function Home() {
   }, []);
 
   return (
-    <div className="w-full">
+    <div className="w-full overflow-hidden">
       {/* Hero Section */}
-      <section className="relative h-screen flex items-center justify-center bg-mountains bg-cover bg-center">
-        <div className="absolute inset-0 bg-black/40 z-10" />
-        <div className="container mx-auto px-6 z-20 text-white text-center">
-          <h1 className="text-5xl md:text-7xl font-bold mb-6">
-            Discover Your Next Adventure
-          </h1>
-          <p className="text-xl md:text-2xl mb-8 max-w-2xl mx-auto">
-            Explore breathtaking destinations and create unforgettable memories
-          </p>
-          <Link
-            href="/trips"
-            className="bg-blue-600 hover:bg-blue-700 text-white px-8 py-4 rounded-full text-lg font-semibold transition-colors"
-          >
-            Explore Trips
-          </Link>
+      <section className="relative min-h-[80vh] md:h-[90vh] flex items-center justify-center bg-slate-900">
+        <div className="absolute inset-0 overflow-hidden">
+          <div className="absolute inset-0 bg-mountains bg-cover bg-center transform scale-110 origin-center parallax-bg" />
+          <div className="absolute inset-0 bg-gradient-to-r from-slate-900/90 to-slate-900/30" />
         </div>
+        <motion.div 
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="container mx-auto px-4 md:px-6 z-20 text-white"
+        >
+          <div className="max-w-3xl mx-auto text-center">
+            <h1 className="text-4xl sm:text-6xl md:text-8xl font-bold mb-4 md:mb-6 leading-tight">
+              Trek the <span className="text-emerald-400">Untamed</span>
+            </h1>
+            <p className="text-lg sm:text-xl md:text-2xl mb-6 md:mb-8 text-gray-300">
+              Professional guides. Authentic experiences. Unforgettable journeys.
+            </p>
+            <div className="flex flex-col sm:flex-row gap-4 justify-center">
+              <Link
+                href="/trips"
+                className="bg-emerald-500 hover:bg-emerald-600 text-white px-8 py-4 rounded-lg text-lg font-semibold transition-all transform hover:scale-105 shadow-lg"
+              >
+                Explore Treks
+              </Link>
+              <Link
+                href="/about"
+                className="border-2 border-white/30 hover:border-white text-white px-8 py-4 rounded-lg text-lg font-semibold transition-all"
+              >
+                Our Story
+              </Link>
+            </div>
+          </div>
+        </motion.div>
       </section>
 
-      {/* Featured Destinations - Now Latest Trips */}
-      <section className="py-20 bg-white">
-        <div className="container mx-auto px-6">
-          <h2 className="text-4xl font-bold text-center mb-12">
-            Latest Adventures
+      {/* Featured Expeditions */}
+      <section className="py-12 md:py-20 bg-slate-50 relative">
+        <div className="absolute inset-0 bg-gradient-to-br from-slate-100 to-slate-50 transform -skew-y-6" />
+        <div className="container mx-auto px-4 md:px-6 relative">
+          <h2 className="text-3xl md:text-4xl font-bold mb-8 md:mb-12 text-slate-800 text-center">
+            Featured <span className="text-emerald-600">Expeditions</span>
           </h2>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8">
             {latestTrips.map((trip) => (
-              <div
-                key={trip._id?.toString()}
-                className="group relative h-[400px] overflow-hidden rounded-lg"
-              >
-                <Image
-                  src={trip.tripImage}
-                  alt={trip.destination}
-                  fill
-                  className="object-cover transition-transform group-hover:scale-110"
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent" />
-                <div className="absolute bottom-6 left-6 text-white">
-                  <h3 className="text-2xl font-bold mb-2">{trip.destination}</h3>
-                  <p className="text-sm mb-2">
-                    {new Date(trip.startDate).toLocaleDateString()} - {new Date(trip.endDate).toLocaleDateString()}
-                  </p>
-                  <p className="text-lg font-bold">
-                    ${trip.price}{' '}
-                    {trip.fullPrice > trip.price && (
-                      <del className="text-sm text-gray-300">${trip.fullPrice}</del>
-                    )}
-                  </p>
-                </div>
-              </div>
+              <Link href={`/trips/${trip._id}`} key={trip._id?.toString()}>
+                <motion.div
+                  whileHover={{ y: -10 }}
+                  className="bg-white rounded-xl overflow-hidden shadow-lg"
+                >
+                  <div className="relative h-[250px]">
+                    <Image
+                      src={trip.tripImage}
+                      alt={trip.destination}
+                      fill
+                      className="object-cover"
+                    />
+                    <div className="absolute top-4 right-4 bg-emerald-500 text-white px-3 py-1 rounded-full text-sm">
+                      {trip.difficulty || 'Moderate'}
+                    </div>
+                  </div>
+                  <div className="p-6">
+                    <h3 className="text-xl font-bold mb-2 text-slate-800">{trip.destination}</h3>
+                    <div className="flex justify-between items-center">
+                      <p className="text-lg font-bold text-emerald-600">
+                        ₹{trip.price}
+                      </p>
+                      <span className="text-slate-600 text-sm">{trip.duration} days</span>
+                    </div>
+                  </div>
+                </motion.div>
+              </Link>
             ))}
           </div>
-          <div className="text-center mt-8">
-            <Link
-              href="/trips"
-              className="inline-block bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition-colors"
-            >
-              View All Trips
-            </Link>
-          </div>
         </div>
       </section>
 
-      {/* Why Choose Us */}
-      <section className="py-20 bg-gray-50">
+      {/* Features Section */}
+      <section className="py-20 bg-slate-900 text-white relative">
         <div className="container mx-auto px-6">
-          <h2 className="text-4xl font-bold text-center mb-12">
-            Why Travel With Us
-          </h2>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+          <h2 className="text-4xl font-bold mb-16 text-center">Why Trek with Us</h2>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-12">
             {features.map((feature) => (
-              <div
+              <motion.div
                 key={feature.title}
-                className="text-center p-6 rounded-lg bg-white shadow-sm"
+                whileHover={{ scale: 1.05 }}
+                className="relative"
               >
-                <div className="w-16 h-16 mx-auto mb-4 text-blue-600">
-                  {feature.icon}
+                <div className="absolute -inset-0.5 bg-gradient-to-r from-emerald-600 to-emerald-400 rounded-lg blur opacity-30" />
+                <div className="relative bg-slate-800 p-8 rounded-lg">
+                  <div className="w-12 h-12 text-emerald-400 mb-6">
+                    {feature.icon}
+                  </div>
+                  <h3 className="text-xl font-bold mb-4">{feature.title}</h3>
+                  <p className="text-slate-400">{feature.description}</p>
                 </div>
-                <h3 className="text-xl font-bold mb-2">{feature.title}</h3>
-                <p className="text-gray-600">{feature.description}</p>
-              </div>
+              </motion.div>
             ))}
           </div>
         </div>
       </section>
 
       {/* CTA Section */}
-      <section className="py-20 bg-blue-600 text-white">
-        <div className="container mx-auto px-6 text-center">
-          <h2 className="text-4xl font-bold mb-6">
-            Ready to Start Your Journey?
+      <section className="relative py-20 overflow-hidden">
+        <div className="absolute inset-0 bg-[url('/images/cta-bg.jpg')] bg-cover bg-center" />
+        <div className="absolute inset-0 bg-gradient-to-r from-emerald-900/90 to-slate-900/90" />
+        <div className="container mx-auto px-6 relative z-10 text-center text-white">
+          <h2 className="text-5xl font-bold mb-8">
+            Ready to Begin Your Adventure?
           </h2>
-          <p className="text-xl mb-8 max-w-2xl mx-auto">
-            Join thousands of travelers who choose us for their adventures
+          <p className="text-xl mb-12 text-gray-300 max-w-2xl mx-auto">
+            Join our community of adventurers and discover the magic of the mountains
           </p>
           <Link
             href="/trips"
-            className="bg-white text-blue-600 px-8 py-4 rounded-full text-lg font-semibold hover:bg-gray-100 transition-colors"
+            className="bg-white text-emerald-800 px-8 py-4 rounded-lg text-lg font-semibold hover:bg-emerald-50 transition-colors inline-flex items-center gap-2"
           >
-            View All Trips
+            Find Your Trek
+            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
+            </svg>
           </Link>
         </div>
       </section>
@@ -132,18 +153,18 @@ export default function Home() {
 // Keep the features array and icon components
 const features = [
   {
-    title: "Expert Guides",
-    description: "Professional local guides with deep knowledge",
+    title: "Local Trek Experts",
+    description: "Certified guides with deep knowledge of Himalayan trails and safety protocols",
     icon: <CompassIcon />,
   },
   {
-    title: "Best Value",
-    description: "Competitive prices and exclusive deals",
+    title: "Curated Experiences",
+    description: "Handpicked routes featuring the best of Indian mountains and culture",
     icon: <StarIcon />,
   },
   {
-    title: "24/7 Support",
-    description: "Always here to help you",
+    title: "Safe Adventures",
+    description: "24/7 ground support and emergency assistance throughout your journey",
     icon: <PhoneIcon />,
   },
 ];

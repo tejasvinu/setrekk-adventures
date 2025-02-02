@@ -1,9 +1,17 @@
-import { Metadata } from 'next';
+import { Metadata, Viewport } from 'next';
 import clientPromise from "@/lib/mongodb";
 import { ObjectId } from "mongodb";
 
 type Props = {
   params: Promise<{ id: string }>;
+};
+
+export const viewport: Viewport = {
+  viewportFit: 'cover',
+  width: 'device-width',
+  initialScale: 1,
+  maximumScale: 5,
+  userScalable: true,
 };
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {

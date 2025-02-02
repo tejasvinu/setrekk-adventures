@@ -10,6 +10,8 @@ const UnifiedTripSchema = new Schema({
   capacity: { type: Number, required: true },
   tripImage: { type: String, required: true },
   weekNumber: { type: Number, required: true, default: 0 },
+  difficulty: { type: String, default: 'Moderate' },
+  duration: { type: Number },  // Add this line
   hotels: [{
     name: { type: String, required: true },
     location: { type: String, required: true },
