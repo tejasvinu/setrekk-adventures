@@ -40,7 +40,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
     return {
       title: `${trip.destination} | Setrekk`,
-      description: `Explore our amazing trip to ${trip.destination}. Book now from $${trip.price}!`,
+      description: `Explore our amazing trip to ${trip.destination}. Book now from ₹${trip.price}!`,
       openGraph: {
         images: [{ url: trip.tripImage }],
       },

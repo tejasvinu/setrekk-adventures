@@ -1,30 +1,24 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { Analytics } from "@vercel/analytics/react"
 import { Suspense } from 'react';
 import { Montserrat } from 'next/font/google';
+import Providers from '@/components/Providers';
 
-// Direct imports instead of using the index
+// Direct imports
 import NavBar from '@/components/NavBar/NavBar';
 import Footer from '@/components/Footer/Footer';
-
-const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
-  display: "swap",
-});
-
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
-  display: "swap",
-});
 
 const montserrat = Montserrat({ 
   subsets: ['latin'],
   display: 'swap',
 });
+
+export const viewport = {
+  width: 'device-width',
+  initialScale: 1,
+  maximumScale: 1,
+};
 
 export const metadata: Metadata = {
   metadataBase: new URL('https://setrekk.com'),
@@ -51,11 +45,6 @@ export const metadata: Metadata = {
     title: 'Setrekk - Experience Unforgettable Adventures in Bengaluru',
     description: 'Discover unique trekking experiences and explore the hidden gems of Bengaluru with Setrekk.',
     images: ['https://setrekk.com/setrekk-v3-transformed.png'],
-  },
-  viewport: {
-    width: 'device-width',
-    initialScale: 1,
-    maximumScale: 1,
   },
   icons: {
     icon: [
@@ -91,26 +80,28 @@ export default function RootLayout({
           }}
         />
         <link rel="icon" href="/setrekk-v3-transformed.png" />
-        <link rel="apple-touch-icon" href="/setrekk-v3-transformed.png" />
+        <link rel="apple-touch-icon" sizes="180x180" href="/setrekk-v3-transformed.png" />
         <link rel="manifest" href="/site.webmanifest" />
-        <link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5" />
         <meta name="msapplication-TileColor" content="#da532c" />
-        <meta name="theme-color" content="#ffffff" />
+        <meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)" />
+        <meta name="theme-color" content="#0f172a" media="(prefers-color-scheme: dark)" />
       </head>
       <body className="min-h-screen flex flex-col bg-gradient-to-b from-slate-900 to-slate-800">
         <div className="fixed inset-0 bg-gradient-to-b from-slate-900 to-transparent opacity-50 pointer-events-none" />
-        <Suspense fallback={
-          <div className="h-16 bg-slate-900 animate-pulse" />
-        }>
-          <NavBar />
-        </Suspense>
-        <main className="flex-grow relative z-10">{children}</main>
-        <Suspense fallback={
-          <div className="h-64 bg-slate-900 animate-pulse" />
-        }>
-          <Footer />
-        </Suspense>
-        <Analytics />
+        <Providers>
+          <Suspense fallback={
+            <div className="h-16 bg-slate-900 animate-pulse" />
+          }>
+            <NavBar />
+          </Suspense>
+          <main className="flex-grow relative z-10">{children}</main>
+          <Suspense fallback={
+            <div className="h-64 bg-slate-900 animate-pulse" />
+          }>
+            <Footer />
+          </Suspense>
+          <Analytics />
+        </Providers>
       </body>
     </html>
   );

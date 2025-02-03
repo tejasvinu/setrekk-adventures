@@ -12,7 +12,7 @@ const options = {
 
 // Define the global type
 declare global {
-  var _mongoClientPromise: Promise<MongoClient>;
+  let _mongoClientPromise: Promise<MongoClient>;
 }
 
 let clientPromise: Promise<MongoClient>;
@@ -27,5 +27,11 @@ if (process.env.NODE_ENV === "development") {
   const client = new MongoClient(uri, options);
   clientPromise = client.connect();
 }
+
+export const connectToDatabase = async () => {
+  const client = await clientPromise;
+  const db = client.db();
+  return { client, db };
+};
 
 export default clientPromise;
