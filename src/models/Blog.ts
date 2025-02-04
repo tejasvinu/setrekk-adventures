@@ -4,7 +4,7 @@ import { connectToDatabase } from "@/lib/mongodb";
 export interface BlogPost {
   _id?: ObjectId;
   title: string;
-  content: string;
+  content: string; // This will now contain HTML content
   image?: string;
   author: string;
   createdAt: Date;
@@ -19,7 +19,6 @@ export interface BlogPostUpdate {
 }
 
 async function getBlogCollection(): Promise<Collection<BlogPost>> {
-  // ...existing code...
   const { db } = await connectToDatabase();
   return db.collection<BlogPost>("blog");
 }
@@ -28,7 +27,7 @@ export function validateBlogPost(post: Partial<BlogPost>): string | null {
   if (!post.title?.trim()) return 'Title is required';
   if (post.title.length > 100) return 'Title is too long (max 100 characters)';
   if (!post.content?.trim()) return 'Content is required';
-  if (post.content.length > 50000) return 'Content is too long (max 50000 characters)';
+  if (post.content.length > 100000) return 'Content is too long (max 100000 characters)';
   if (post.image && !isValidUrl(post.image)) return 'Invalid image URL';
   return null;
 }

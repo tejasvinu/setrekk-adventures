@@ -1,8 +1,22 @@
 "use client"
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { motion } from 'framer-motion';
 import { useAuth } from '@/contexts/AuthContext';
+import dynamic from 'next/dynamic'
+
+const RichTextEditor = dynamic(
+  () => import('@/components/RichTextEditor'),
+  { 
+    ssr: false,
+    loading: () => (
+      <div className="w-full bg-slate-900 min-h-[500px] animate-pulse">
+        <div className="h-12 bg-slate-800/50 mb-4" />
+        <div className="h-96 bg-slate-800/30" />
+      </div>
+    )
+  }
+);
 
 export default function NewBlogPost() {
   const router = useRouter();
@@ -14,10 +28,20 @@ export default function NewBlogPost() {
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState('');
+  const [isLoading, setIsLoading] = useState(true);
 
-  if (!session) {
-    router.push('/login');
-    return null;
+  useEffect(() => {
+    if (!session) {
+      router.push('/login');
+    } else {
+      setIsLoading(false);
+    }
+  }, [session, router]);
+
+  if (!session || isLoading) {
+    return <div className="min-h-screen flex items-center justify-center">
+      <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-emerald-500" />
+    </div>;
   }
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -54,98 +78,46 @@ export default function NewBlogPost() {
   };
 
   return (
-    <div className="min-h-screen bg-slate-50">
-      {/* Hero Section */}
-      <section className="relative pt-24 pb-16 bg-slate-900">
-        <div className="absolute inset-0 bg-gradient-to-r from-emerald-900/95 to-slate-900/95" />
-        <div className="relative container mx-auto px-4 z-10">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="max-w-3xl mx-auto text-center"
+    <form onSubmit={handleSubmit} className="min-h-screen bg-slate-900">
+      <div className="max-w-[90%] xl:max-w-8xl mx-auto px-4 pt-16">
+        <input
+          type="text"
+          value={formData.title}
+          onChange={(e) => setFormData({...formData, title: e.target.value})}
+          className="w-full text-4xl font-bold border-none outline-none mb-8 placeholder-slate-600 bg-transparent text-slate-200"
+          placeholder="Enter your story title..."
+        />
+        <input
+          type="url"
+          value={formData.image}
+          onChange={(e) => setFormData({...formData, image: e.target.value})}
+          className="w-full px-4 py-2 border border-slate-700 rounded-lg mb-8 bg-slate-800/50 text-slate-300 placeholder-slate-500"
+          placeholder="Add a cover image URL (optional)"
+        />
+        <RichTextEditor
+          value={formData.content}
+          onChange={(content) => setFormData(prev => ({ ...prev, content }))}
+          placeholder="Tell your story..."
+        />
+      </div>
+      <div className="fixed bottom-0 left-0 right-0 bg-slate-900/80 backdrop-blur-sm border-t border-slate-800 py-4">
+        <div className="max-w-[90%] xl:max-w-8xl mx-auto px-4 flex justify-end gap-4">
+          <button
+            type="button"
+            onClick={() => router.back()}
+            className="px-6 py-2 text-slate-400 hover:text-slate-200"
           >
-            <h1 className="text-4xl md:text-5xl font-bold text-white mb-6">Share Your Story</h1>
-            <p className="text-lg text-gray-300">
-              Share your trekking experience and inspire fellow adventurers
-            </p>
-          </motion.div>
-        </div>
-      </section>
-
-      {/* Form Section */}
-      <section className="py-16">
-        <div className="container mx-auto px-4">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="max-w-3xl mx-auto"
+            Cancel
+          </button>
+          <button
+            onClick={handleSubmit}
+            disabled={isSubmitting}
+            className="px-6 py-2 bg-emerald-600 text-white rounded-full hover:bg-emerald-700 disabled:opacity-50"
           >
-            <div className="bg-white rounded-xl shadow-lg p-8">
-              {error && (
-                <div className="mb-6 p-4 bg-red-50 border border-red-200 text-red-600 rounded-lg">
-                  {error}
-                </div>
-              )}
-              <form onSubmit={handleSubmit} className="space-y-6">
-                <div>
-                  <label className="block text-sm font-medium text-slate-700 mb-2">
-                    Title
-                  </label>
-                  <input
-                    type="text"
-                    required
-                    value={formData.title}
-                    onChange={(e) => setFormData({...formData, title: e.target.value})}
-                    className="w-full px-4 py-3 rounded-lg border border-slate-200 focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
-                    placeholder="Give your story a catchy title"
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-slate-700 mb-2">
-                    Cover Image URL
-                  </label>
-                  <input
-                    type="url"
-                    value={formData.image}
-                    onChange={(e) => setFormData({...formData, image: e.target.value})}
-                    className="w-full px-4 py-3 rounded-lg border border-slate-200 focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
-                    placeholder="https://example.com/image.jpg"
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-slate-700 mb-2">
-                    Content
-                  </label>
-                  <textarea
-                    required
-                    rows={8}
-                    value={formData.content}
-                    onChange={(e) => setFormData({...formData, content: e.target.value})}
-                    className="w-full px-4 py-3 rounded-lg border border-slate-200 focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
-                    placeholder="Write your story here..."
-                  />
-                </div>
-                <div className="flex justify-end space-x-4">
-                  <button
-                    type="button"
-                    onClick={() => router.back()}
-                    className="px-4 py-2 text-gray-600 hover:text-gray-800"
-                  >
-                    Cancel
-                  </button>
-                  <button
-                    type="submit"
-                    disabled={isSubmitting}
-                    className="px-4 py-2 bg-emerald-600 text-white rounded-md hover:bg-emerald-700 disabled:opacity-50"
-                  >
-                    {isSubmitting ? 'Creating...' : 'Create Post'}
-                  </button>
-                </div>
-              </form>
-            </div>
-          </motion.div>
+            {isSubmitting ? 'Publishing...' : 'Publish'}
+          </button>
         </div>
-      </section>
-    </div>
+      </div>
+    </form>
   );
 }

@@ -1,6 +1,6 @@
 import NextAuth, { NextAuthOptions } from 'next-auth';
 import CredentialsProvider from 'next-auth/providers/credentials';
-import { clientPromise } from '@/lib/mongodb';
+import clientPromise from '@/lib/mongodb';
 import { verifyPassword } from '@/lib/auth';
 
 export const authOptions: NextAuthOptions = {
@@ -49,7 +49,7 @@ export const authOptions: NextAuthOptions = {
   callbacks: {
     async session({ session, token }) {
       if (session.user && token.sub) {
-        session.user.id = token.sub;
+        (session.user as any).id = token.sub;
       }
       return session;
     },

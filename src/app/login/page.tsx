@@ -1,10 +1,11 @@
 "use client"
-import { useState } from 'react';
+import { useState, Suspense } from 'react';
 import { signIn } from 'next-auth/react';
 import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
 
-export default function Login() {
+// Rename the original component to LoginContent.
+function LoginContent() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
@@ -32,7 +33,7 @@ export default function Login() {
       router.push('/');
       router.refresh();
     } catch (err) {
-      setError(err.message);
+      setError(err instanceof Error ? err.message : String(err));
     } finally {
       setLoading(false);
     }
@@ -108,5 +109,14 @@ export default function Login() {
         </p>
       </div>
     </div>
+  );
+}
+
+// Wrap the LoginContent with Suspense in the default export.
+export default function Login() {
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <LoginContent />
+    </Suspense>
   );
 }

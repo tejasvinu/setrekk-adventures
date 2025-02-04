@@ -1,15 +1,19 @@
 import { NextRequest, NextResponse } from "next/server";
-import { getBlogPostById, deleteBlogPostById } from "@/models/Blog";
-import { ObjectId } from "mongodb";
+import { getBlogPostById, deleteBlogPostById, updateBlogPost, validateBlogPost } from "@/models/Blog";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 
 export async function GET(
-  request: NextRequest,
-  { params }: { params: { id: string } }
+  request: Request,
+  { params }: { params: Promise<{ id: string }> } // changed type
 ) {
+  const { id } = await params; // await params now
+  if (!id) {
+    return NextResponse.json({ error: "Missing ID parameter" }, { status: 400 });
+  }
+
   try {
-    const post = await getBlogPostById(params.id);
+    const post = await getBlogPostById(id);
     
     if (!post) {
       return NextResponse.json({ error: "Post not found" }, { status: 404 });
@@ -23,17 +27,21 @@ export async function GET(
 }
 
 export async function DELETE(
-  request: NextRequest,
-  { params }: { params: { id: string } }
+  request: Request,
+  { params }: { params: Promise<{ id: string }> } // changed type
 ) {
+  const { id } = await params; // await params now
+  if (!id) {
+    return NextResponse.json({ error: "Missing ID parameter" }, { status: 400 });
+  }
+
   const session = await getServerSession(authOptions);
-  
-  if (!session) {
+  if (!session?.user?.email) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
   try {
-    const success = await deleteBlogPostById(params.id, session.user?.email as string);
+    const success = await deleteBlogPostById(id, session.user.email);
     if (!success) {
       return NextResponse.json({ error: "Post not found or unauthorized" }, { status: 404 });
     }
@@ -45,12 +53,16 @@ export async function DELETE(
 }
 
 export async function PUT(
-  request: NextRequest,
-  { params }: { params: { id: string } }
+  request: Request,
+  { params }: { params: Promise<{ id: string }> } // changed type
 ) {
+  const { id } = await params; // await params now
+  if (!id) {
+    return NextResponse.json({ error: "Missing ID parameter" }, { status: 400 });
+  }
+
   const session = await getServerSession(authOptions);
-  
-  if (!session) {
+  if (!session?.user?.email) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
@@ -61,26 +73,15 @@ export async function PUT(
       return NextResponse.json({ error: validationError }, { status: 400 });
     }
 
-    const success = await updateBlogPost(
-      params.id,
-      session.user?.email as string,
-      updates
-    );
-
+    const success = await updateBlogPost(id, session.user.email, updates);
     if (!success) {
-      return NextResponse.json(
-        { error: "Post not found or unauthorized" },
-        { status: 404 }
-      );
+      return NextResponse.json({ error: "Post not found or unauthorized" }, { status: 404 });
     }
 
     return NextResponse.json({ message: "Post updated successfully" });
   } catch (err) {
     console.error("Failed to update post:", err);
-    return NextResponse.json(
-      { error: "Failed to update post" },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: "Failed to update post" }, { status: 500 });
   }
 }
 

@@ -10,9 +10,9 @@ const options = {
   serverSelectionTimeoutMS: 5000,
 };
 
-// Define the global type
+// Define the global type using NodeJS namespace
 declare global {
-  let _mongoClientPromise: Promise<MongoClient>;
+  var _mongoClientPromise: Promise<MongoClient> | undefined;
 }
 
 let clientPromise: Promise<MongoClient>;

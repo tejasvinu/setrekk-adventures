@@ -1,7 +1,7 @@
 import { hash, compare } from 'bcryptjs';
 import { NextAuthOptions } from 'next-auth';
 import GoogleProvider from 'next-auth/providers/google';
-import { MongoDBAdapter } from "@next-auth/mongodb-adapter";
+import { MongoDBAdapter } from "@auth/mongodb-adapter";
 import clientPromise from './mongodb';
 
 export async function hashPassword(password: string) {
@@ -35,7 +35,7 @@ export const authOptions: NextAuthOptions = {
   callbacks: {
     async session({ session, token }) {
       if (session.user) {
-        session.user.id = token.sub;
+        (session.user as any).id = token.sub;
       }
       return session;
     },
