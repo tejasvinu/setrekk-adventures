@@ -96,7 +96,7 @@ export default function BlogPost({ params: paramsPromise }: { params: Promise<{ 
   return (
     <div className="min-h-screen bg-slate-900">
       {/* Hero Section with Cover Image */}
-      <section className="relative min-h-[60vh] flex items-end bg-slate-900">
+      <section className="relative min-h-[40vh] md:min-h-[60vh] flex items-end bg-slate-900">
         {post.image && (
           <>
             <div className="absolute inset-0">
@@ -109,16 +109,16 @@ export default function BlogPost({ params: paramsPromise }: { params: Promise<{ 
             <div className="absolute inset-0 bg-gradient-to-t from-slate-900 via-slate-900/50 to-transparent" />
           </>
         )}
-        <div className="relative container mx-auto px-4 z-10 pb-16 pt-32">
+        <div className="relative container mx-auto px-4 z-10 pb-8 md:pb-16 pt-24 md:pt-32">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            className="max-w-[90%] xl:max-w-8xl mx-auto"
+            className="max-w-[95%] md:max-w-[90%] xl:max-w-8xl mx-auto"
           >
-            <h1 className="text-4xl md:text-6xl font-bold text-white mb-6 text-shadow-lg">
+            <h1 className="text-3xl sm:text-4xl md:text-6xl font-bold text-white mb-4 md:mb-6 text-shadow-lg">
               {post.title}
             </h1>
-            <div className="flex items-center text-gray-100 space-x-4">
+            <div className="flex flex-col sm:flex-row items-start sm:items-center text-gray-100 space-y-2 sm:space-y-0 sm:space-x-4">
               <span className="flex items-center backdrop-blur-sm bg-slate-900/30 px-4 py-2 rounded-full">
                 <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
@@ -137,14 +137,14 @@ export default function BlogPost({ params: paramsPromise }: { params: Promise<{ 
       </section>
 
       {/* Content Section */}
-      <section className="py-16">
+      <section className="py-8 md:py-16">
         <div className="container mx-auto px-4">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            className="max-w-[90%] xl:max-w-8xl mx-auto"
+            className="max-w-[95%] md:max-w-[90%] xl:max-w-8xl mx-auto"
           >
-            <div className="bg-slate-800 rounded-xl shadow-lg p-8">
+            <div className="bg-slate-800 rounded-xl shadow-lg p-4 md:p-8">
               {post && <BlogContent post={post} onDelete={handleDelete} />}
             </div>
           </motion.div>

@@ -9,6 +9,17 @@ export interface BlogPost {
   author: string;
   createdAt: Date;
   updatedAt?: Date;
+  location: {
+    name: string;
+    country: string;
+    elevation: number;  // in meters
+  };
+  trekDetails: {
+    difficulty: 'Easy' | 'Moderate' | 'Difficult' | 'Expert';
+    duration: number;  // in days
+    bestSeasons: string[];
+  };
+  // Removed stats property
 }
 
 export interface BlogPostUpdate {

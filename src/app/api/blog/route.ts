@@ -21,9 +21,15 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const { title, content, image } = await req.json();
+    const { 
+      title, 
+      content, 
+      image,
+      location,
+      trekDetails
+    } = await req.json();
     
-    if (!title || !content) {
+    if (!title || !content || !location || !trekDetails) {
       return NextResponse.json({ error: "Missing required fields" }, { status: 400 });
     }
 
@@ -31,7 +37,9 @@ export async function POST(req: NextRequest) {
       title,
       content,
       image,
-      author: session.user.email
+      author: session.user.email,
+      location,
+      trekDetails
     });
 
     return NextResponse.json(post);
