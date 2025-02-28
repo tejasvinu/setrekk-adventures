@@ -1,5 +1,5 @@
 "use client"
-import { createContext, useContext, useState, useEffect } from 'react';
+import { createContext, useContext } from 'react';
 import { Session } from 'next-auth';
 import { useSession } from 'next-auth/react';
 
@@ -25,6 +25,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     return protectedRoutes.some(route => path.startsWith(route));
   };
 
+  // We still render children while loading to allow for better UX
   return (
     <AuthContext.Provider value={{ session, loading, isProtectedRoute }}>
       {children}
@@ -32,4 +33,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   );
 }
 
-export const useAuth = () => useContext(AuthContext);
+export const useAuth = () => {
+  const context = useContext(AuthContext);
+  if (!context) {
+    throw new Error('useAuth must be used within an AuthProvider');
+  }
+  return context;
+};

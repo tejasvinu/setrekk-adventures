@@ -7,101 +7,180 @@ import { motion } from "framer-motion";
 
 export default function Home() {
   const [latestTrips, setLatestTrips] = useState<UnifiedTrip[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    fetch("/api/trips")
-      .then((res) => res.json())
-      .then((data) => {
-        // Sort by creation date and take latest 3
-        const sorted = data.sort((a: UnifiedTrip, b: UnifiedTrip) => 
-          new Date(b.createdAt!).getTime() - new Date(a.createdAt!).getTime()
-        ).slice(0, 3);
+    const fetchTrips = async () => {
+      try {
+        const res = await fetch("/api/trips");
+        const data = await res.json();
+        const sorted = data
+          .sort((a: UnifiedTrip, b: UnifiedTrip) => 
+            new Date(b.createdAt!).getTime() - new Date(a.createdAt!).getTime()
+          )
+          .slice(0, 3);
         setLatestTrips(sorted);
-      });
+      } catch (error) {
+        console.error("Error fetching trips:", error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    fetchTrips();
   }, []);
 
   return (
-    <div className="w-full overflow-hidden">
-      {/* Hero Section */}
-      <section className="relative min-h-[90vh] flex items-center justify-center bg-slate-900">
+    <div className="w-full overflow-hidden bg-gradient-to-b from-slate-50 to-white">
+      {/* Hero Section with Parallax */}
+      <section className="relative min-h-screen flex items-center justify-center bg-slate-900">
         <motion.div 
-          initial={{ scale: 1.1 }}
-          animate={{ scale: 1 }}
-          transition={{ duration: 1.5 }}
+          initial={{ scale: 1.1, opacity: 0 }}
+          animate={{ scale: 1, opacity: 1 }}
+          transition={{ duration: 2, ease: "easeOut" }}
           className="absolute inset-0 overflow-hidden"
         >
-          <div className="absolute inset-0 bg-mountains bg-cover bg-center transform scale-110 origin-center will-change-transform" 
-               style={{ backgroundAttachment: 'fixed' }} />
+          <div 
+            className="absolute inset-0 bg-mountains bg-cover bg-center transform scale-110 origin-center"
+            style={{ 
+              backgroundAttachment: 'fixed',
+              willChange: 'transform',
+            }} 
+          />
           <div className="absolute inset-0 bg-gradient-to-r from-slate-900/95 via-slate-900/80 to-slate-900/60" />
+          <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,transparent_0%,rgba(15,23,42,0.8)_100%)]" />
         </motion.div>
+
         <motion.div 
-          initial={{ opacity: 0, y: 20 }}
+          initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
-          className="container mx-auto px-4 md:px-6 z-20 text-white"
+          transition={{ duration: 1, delay: 0.5 }}
+          className="container mx-auto px-4 md:px-6 z-20 text-white relative"
         >
-          <div className="max-w-3xl mx-auto text-center">
-            <h1 className="text-4xl sm:text-6xl md:text-8xl font-bold mb-4 md:mb-6 leading-tight">
-              Trek the <span className="text-emerald-400">Untamed</span>
-            </h1>
-            <p className="text-lg sm:text-xl md:text-2xl mb-6 md:mb-8 text-gray-300">
-              Professional guides. Authentic experiences. Unforgettable journeys.
-            </p>
-            <div className="flex flex-col sm:flex-row gap-4 justify-center">
+          <div className="max-w-4xl mx-auto text-center">
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8, delay: 0.8 }}
+            >
+              <h1 className="text-5xl sm:text-6xl md:text-7xl xl:text-8xl font-bold mb-6 leading-tight tracking-tight">
+                Trek the <span className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 to-teal-500">Untamed</span>
+              </h1>
+              <p className="text-xl sm:text-2xl md:text-3xl mb-8 text-gray-300 font-light">
+                Professional guides. Authentic experiences.
+                <span className="block mt-2">Unforgettable journeys.</span>
+              </p>
+            </motion.div>
+
+            <motion.div 
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8, delay: 1.2 }}
+              className="flex flex-col sm:flex-row gap-6 justify-center items-center"
+            >
               <Link
                 href="/trips"
-                className="bg-emerald-500 hover:bg-emerald-600 text-white px-8 py-4 rounded-lg text-lg font-semibold transition-all transform hover:scale-105 shadow-lg"
+                className="group relative inline-flex items-center justify-center px-8 py-4 overflow-hidden font-bold rounded-lg bg-gradient-to-r from-emerald-500 to-teal-500 text-white transition-all duration-300 ease-out hover:scale-105 hover:shadow-2xl"
               >
-                Explore Treks
+                <span className="absolute inset-0 w-full h-full bg-gradient-to-br from-blue-500 via-purple-500 to-pink-500 opacity-0 group-hover:opacity-50 transition-opacity"></span>
+                <span className="relative flex items-center gap-2">
+                  Explore Treks
+                  <svg className="w-5 h-5 transition-transform group-hover:translate-x-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
+                  </svg>
+                </span>
               </Link>
+
               <Link
                 href="/about"
-                className="border-2 border-white/30 hover:border-white text-white px-8 py-4 rounded-lg text-lg font-semibold transition-all"
+                className="group relative inline-flex items-center justify-center px-8 py-4 font-bold text-white rounded-lg overflow-hidden border-2 border-white/30 hover:border-white/60 transition-all duration-300"
               >
-                Our Story
+                <span className="relative">Our Story</span>
+                <span className="absolute inset-0 bg-white/10 opacity-0 group-hover:opacity-100 transition-opacity"></span>
               </Link>
-            </div>
+            </motion.div>
           </div>
+        </motion.div>
+
+        {/* Scroll Indicator */}
+        <motion.div 
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 2 }}
+          className="absolute bottom-8 left-1/2 transform -translate-x-1/2"
+        >
+          <motion.div
+            animate={{ y: [0, 10, 0] }}
+            transition={{ repeat: Infinity, duration: 2 }}
+            className="w-6 h-10 rounded-full border-2 border-white/30 flex items-start justify-center p-2"
+          >
+            <motion.div className="w-1.5 h-1.5 rounded-full bg-white" />
+          </motion.div>
         </motion.div>
       </section>
 
-      {/* Featured Expeditions with enhanced hover effects */}
-      <section className="py-16 md:py-24 bg-gradient-to-b from-slate-50 to-white relative">
-        <div className="absolute inset-0 bg-gradient-to-br from-slate-100 to-slate-50 transform -skew-y-6" />
-        <div className="container mx-auto px-4 md:px-6 relative">
-          <h2 className="text-3xl md:text-4xl font-bold mb-8 md:mb-12 text-slate-800 text-center">
-            Featured <span className="text-emerald-600">Expeditions</span>
-          </h2>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8">
-            {latestTrips.map((trip) => (
-              <Link href={`/trips/${trip._id}`} key={trip._id?.toString()}>
-                <motion.div
-                  whileHover={{ y: -10 }}
-                  className="bg-white rounded-xl overflow-hidden shadow-lg"
-                >
-                  <div className="relative h-[250px]">
-                    <Image
-                      src={trip.tripImage}
-                      alt={trip.destination}
-                      fill
-                      className="object-cover"
-                    />
-                    <div className="absolute top-4 right-4 bg-emerald-500 text-white px-3 py-1 rounded-full text-sm">
-                      {trip.difficulty || 'Moderate'}
+      {/* Featured Expeditions */}
+      <section className="py-24 relative">
+        <div className="absolute inset-0 bg-gradient-to-b from-slate-100/50 to-white/50" />
+        <div className="container mx-auto px-4 relative">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            className="text-center mb-16"
+          >
+            <h2 className="text-4xl md:text-5xl font-bold mb-6 text-slate-900">
+              Featured <span className="text-emerald-600">Expeditions</span>
+            </h2>
+            <div className="w-24 h-1 bg-gradient-to-r from-emerald-500 to-teal-500 mx-auto rounded-full" />
+          </motion.div>
+
+          {isLoading ? (
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+              {[...Array(3)].map((_, i) => (
+                <div key={i} className="animate-pulse">
+                  <div className="bg-slate-200 h-[250px] rounded-xl mb-4" />
+                  <div className="h-4 bg-slate-200 rounded w-3/4 mb-2" />
+                  <div className="h-4 bg-slate-200 rounded w-1/2" />
+                </div>
+              ))}
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+              {latestTrips.map((trip, index) => (
+                <Link href={`/trips/${trip._id}`} key={trip._id?.toString()}>
+                  <motion.div
+                    initial={{ opacity: 0, y: 20 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: true }}
+                    transition={{ delay: index * 0.2 }}
+                    whileHover={{ y: -8 }}
+                    className="group relative bg-white rounded-xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-300"
+                  >
+                    <div className="relative h-[250px]">
+                      <Image
+                        src={trip.tripImage}
+                        alt={trip.destination}
+                        fill
+                        className="object-cover"
+                      />
+                      <div className="absolute top-4 right-4 bg-emerald-500 text-white px-3 py-1 rounded-full text-sm">
+                        {trip.difficulty || 'Moderate'}
+                      </div>
                     </div>
-                  </div>
-                  <div className="p-6">
-                    <h3 className="text-xl font-bold mb-2 text-slate-800">{trip.destination}</h3>
-                    <div className="flex justify-between items-center">
-                      <p className="text-lg font-bold text-emerald-600">
-                        ₹{trip.price}
-                      </p>
-                      <span className="text-slate-600 text-sm">{trip.duration} days</span>
+                    <div className="p-6">
+                      <h3 className="text-xl font-bold mb-2 text-slate-800">{trip.destination}</h3>
+                      <div className="flex justify-between items-center">
+                        <p className="text-lg font-bold text-emerald-600">
+                          ₹{trip.price}
+                        </p>
+                        <span className="text-slate-600 text-sm">{trip.duration} days</span>
+                      </div>
                     </div>
-                  </div>
-                </motion.div>
-              </Link>
-            ))}
-          </div>
+                  </motion.div>
+                </Link>
+              ))}
+            </div>
+          )}
         </div>
       </section>
 

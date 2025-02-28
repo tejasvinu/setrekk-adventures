@@ -2,23 +2,43 @@
 @tailwind components;
 @tailwind utilities;
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
-
-@media (prefers-color-scheme: dark) {
+@layer base {
   :root {
+    --background: #ffffff;
+    --foreground: #171717;
+    
+    /* Custom colors for light mode */
+    --card-bg: rgba(255, 255, 255, 0.8);
+    --card-border: rgba(229, 231, 235, 0.5);
+    --input-bg: #f8fafc;
+    --input-border: #e2e8f0;
+    --header-bg: rgba(255, 255, 255, 0.8);
+    --button-primary: #10b981;
+    --button-primary-hover: #059669;
+  }
+
+  .dark {
     --background: #0a0a0a;
     --foreground: #ededed;
+    
+    /* Custom colors for dark mode */
+    --card-bg: rgba(15, 23, 42, 0.8);
+    --card-border: rgba(30, 41, 59, 0.5);
+    --input-bg: #1e293b;
+    --input-border: #334155;
+    --header-bg: rgba(15, 23, 42, 0.8);
+    --button-primary: #10b981;
+    --button-primary-hover: #34d399;
   }
 }
 
 body {
   color: var(--foreground);
   background: var(--background);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-sans, Arial, Helvetica, sans-serif);
+  transition: background-color 0.3s ease, color 0.3s ease;
 }
+
 .parallax-bg {
   animation: subtle-move 30s ease-in-out infinite alternate;
 }
@@ -48,14 +68,14 @@ body {
 .rich-text-editor .ql-toolbar {
   border-top-left-radius: 0.5rem;
   border-top-right-radius: 0.5rem;
-  background-color: #f8fafc;
-  border-color: #e2e8f0;
+  background-color: var(--input-bg);
+  border-color: var(--input-border);
 }
 
 .rich-text-editor .ql-container {
   border-bottom-left-radius: 0.5rem;
   border-bottom-right-radius: 0.5rem;
-  border-color: #e2e8f0;
+  border-color: var(--input-border);
 }
 
 /* Editor Toolbar Styles */
@@ -72,7 +92,7 @@ body {
   transform: translateY(-50%);
   height: 70%;
   width: 1px;
-  background-color: #475569;
+  background-color: var(--input-border);
 }
 
 /* TipTap Editor Styles */
@@ -86,7 +106,6 @@ body {
     font-weight: 700;
     line-height: 1.2;
     margin-bottom: 0.5em;
-    color: #f1f5f9;
   }
 
   h2 {
@@ -94,7 +113,6 @@ body {
     font-weight: 600;
     line-height: 1.3;
     margin-bottom: 0.5em;
-    color: #e2e8f0;
   }
 
   p {
@@ -102,19 +120,16 @@ body {
     font-size: 1.25rem;
     line-height: 1.8;
     margin-bottom: 1em;
-    color: #cbd5e1;
   }
 
   ul, ol {
     padding-left: 1.5em;
     margin-bottom: 1em;
-    color: #cbd5e1;
   }
 
   blockquote {
-    border-left: 3px solid #475569;
+    border-left: 3px solid var(--input-border);
     padding-left: 1em;
-    color: #94a3b8;
     font-style: italic;
     margin: 1.5em 0;
   }
@@ -178,7 +193,7 @@ body {
 }
 
 .hotel-card {
-  background: linear-gradient(to bottom, rgba(30, 41, 59, 0.7), rgba(30, 41, 59, 0.95));
+  background: linear-gradient(to bottom, var(--card-bg), rgba(30, 41, 59, 0.95));
   backdrop-filter: blur(8px);
 }
 
@@ -194,13 +209,13 @@ body {
   left: 50%;
   transform: translateX(-50%);
   padding: 0.25rem 0.5rem;
-  background-color: #0f172a;
-  color: #f3f4f6;
+  background-color: var(--card-bg);
+  color: var(--foreground);
   border-radius: 0.375rem;
   font-size: 0.7rem;
   white-space: nowrap;
   z-index: 50;
-  border: 1px solid #1e293b;
+  border: 1px solid var(--card-border);
 }
 
 .tooltip-trigger:hover::before {
@@ -211,7 +226,7 @@ body {
   transform: translateX(-50%);
   border-width: 0.5rem;
   border-style: solid;
-  border-color: transparent transparent #1e293b transparent;
+  border-color: transparent transparent var(--card-border) transparent;
 }
 
 /* Blog Card Hover Effects */
@@ -256,4 +271,85 @@ body {
   to {
     transform: scale(1.05);
   }
+}
+
+/* New Animations and Effects */
+@keyframes shimmer {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+.shimmer-effect {
+  background: linear-gradient(90deg, 
+    rgba(255,255,255,0) 0%, 
+    rgba(255,255,255,0.1) 50%, 
+    rgba(255,255,255,0) 100%);
+  background-size: 200% 100%;
+  animation: shimmer 2s infinite;
+}
+
+.card-hover-effect {
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.card-hover-effect:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 10px 25px -5px rgba(16, 185, 129, 0.1), 
+              0 8px 10px -6px rgba(16, 185, 129, 0.1);
+}
+
+.gradient-text {
+  background: linear-gradient(90deg, #10B981, #059669);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  color: transparent;
+}
+
+.glass-effect {
+  background: rgba(15, 23, 42, 0.7);
+  backdrop-filter: blur(8px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+/* Smooth Transition Classes */
+.smooth-transition {
+  transition: all 0.3s ease;
+}
+
+.scale-on-hover {
+  transition: transform 0.2s ease;
+}
+
+.scale-on-hover:hover {
+  transform: scale(1.05);
+}
+
+/* Card depth effect */
+.card-depth {
+  box-shadow: 
+    0 1px 2px rgba(0, 0, 0, 0.1), 
+    0 5px 15px rgba(0, 0, 0, 0.1);
+  transition: box-shadow 0.3s ease, transform 0.3s ease;
+}
+
+.card-depth:hover {
+  box-shadow: 
+    0 2px 4px rgba(16, 185, 129, 0.1), 
+    0 8px 20px rgba(16, 185, 129, 0.2);
+  transform: translateY(-3px);
+}
+
+/* Focus effect for accessibility */
+.focus-ring {
+  transition: box-shadow 0.2s ease;
+}
+
+.focus-ring:focus {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.4);
 }

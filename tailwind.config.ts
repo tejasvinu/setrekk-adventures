@@ -3,6 +3,7 @@ import type { PluginAPI } from 'tailwindcss/types/config'
 import typography from "@tailwindcss/typography";
 
 export default {
+  darkMode: 'class', // Enable class-based dark mode
   content: [
     "./src/pages/**/*.{js,ts,jsx,tsx,mdx}",
     "./src/components/**/*.{js,ts,jsx,tsx,mdx}",
@@ -13,12 +14,29 @@ export default {
       colors: {
         background: "var(--background)",
         foreground: "var(--foreground)",
+        primary: {
+          DEFAULT: '#10B981', // Emerald-500
+          50: '#ECFDF5',
+          100: '#D1FAE5',
+          200: '#A7F3D0',
+          300: '#6EE7B7',
+          400: '#34D399',
+          500: '#10B981',
+          600: '#059669',
+          700: '#047857',
+          800: '#065F46',
+          900: '#064E3B',
+          950: '#022C22',
+        },
       },
       screens: {
         custom: "1550px", // Define your custom breakpoint size
       },
       backgroundImage: {
         mountains: "url('/mountains.svg')",
+        "gradient-radial": "radial-gradient(var(--tw-gradient-stops))",
+        "gradient-conic":
+          "conic-gradient(from 180deg at 50% 50%, var(--tw-gradient-stops))",
       },
       typography: ({ theme }: PluginAPI) => ({
         invert: {
@@ -34,6 +52,23 @@ export default {
             '--tw-prose-hr': theme('colors.slate[700]'),
             '--tw-prose-th-borders': theme('colors.slate[600]'),
             '--tw-prose-td-borders': theme('colors.slate[700]'),
+          },
+        },
+        DEFAULT: {
+          css: {
+            color: theme('colors.gray.200'),
+            a: {
+              color: theme('colors.emerald.500'),
+              '&:hover': {
+                color: theme('colors.emerald.400'),
+              },
+            },
+            'h1, h2, h3, h4, h5, h6': {
+              color: theme('colors.white'),
+            },
+            strong: {
+              color: theme('colors.white'),
+            },
           },
         },
       }),
@@ -59,7 +94,13 @@ export default {
           '100%': { opacity: '1' },
         },
       },
+      fontFamily: {
+        sans: ['var(--font-montserrat)', 'system-ui', 'sans-serif'],
+      },
     },
   },
-  plugins: [typography],
+  plugins: [
+    typography,
+    require('@tailwindcss/forms'),
+  ],
 } satisfies Config;
