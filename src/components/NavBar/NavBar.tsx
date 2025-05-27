@@ -122,24 +122,23 @@ const NavBar = () => {
                                         initial="hidden" 
                                         animate="visible" 
                                         variants={navItemVariants}
-                                        whileHover={{ scale: 1.05, y: -2 }} 
-                                        whileTap={{ scale: 0.95 }}
+                                        whileHover={isActive(item.href) ? { scale: 1.02 } : { scale: 1.03, y: -1, color: "#ffffff" }}
+                                        whileTap={{ scale: 0.97 }}
                                     >
                                         <Link 
                                             href={item.href}
-                                            className={`
+                                            className={`relative rounded-md px-4 py-2 text-sm font-medium transition-colors duration-150 ease-out
                                                 ${isActive(item.href) 
                                                     ? 'bg-emerald-600 text-white' 
-                                                    : 'text-white/80 hover:text-white hover:bg-emerald-600/50'
+                                                    : 'text-white/80 hover:text-white' 
                                                 } 
-                                                rounded-md px-4 py-2 text-sm font-medium transition-all duration-300
                                             `}
                                         >
                                             {item.name}
                                             {isActive(item.href) && (
                                                 <motion.div 
-                                                    layoutId="activeNav"
-                                                    className="absolute bottom-0 left-0 right-0 h-0.5 bg-white mt-1"
+                                                    layoutId="activeNavDesktop" // Unique layoutId for desktop
+                                                    className="absolute bottom-0 left-0 right-0 h-0.5 bg-white" // Removed mt-1 as y-transform might need precise positioning
                                                     transition={{ duration: 0.3 }}
                                                 />
                                             )}
@@ -164,8 +163,8 @@ const NavBar = () => {
                                 {session ? (
                                     <>
                                         <motion.button
-                                            whileHover={{ scale: 1.05 }}
-                                            whileTap={{ scale: 0.95 }}
+                                            whileHover={{ scale: 1.05 }} // Existing good hover for user avatar
+                                            whileTap={{ scale: 0.95 }} // Consistent tap
                                             onClick={() => setIsUserMenuOpen(!isUserMenuOpen)}
                                             className="flex items-center justify-center w-8 h-8 rounded-full bg-emerald-600 text-white focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:ring-offset-2"
                                             aria-label="User menu"
@@ -214,9 +213,24 @@ const NavBar = () => {
                                             animate="visible" 
                                             variants={navItemVariants}
                                         >
-                                            <Link href="/login" className="text-white/80 hover:text-white hover:bg-emerald-600/50 rounded-md px-4 py-2 text-sm font-medium transition-all duration-300">
-                                                Login
-                                            </Link>
+                                          <motion.custom
+                                            as={Link}
+                                            href="/login"
+                                            className="relative inline-flex items-center justify-center px-4 py-2 font-medium text-slate-300 rounded-md border border-slate-700 transition-colors duration-300 ease-out text-sm"
+                                            whileHover={{
+                                              scale: 1.03,
+                                              color: "#10b981", // emerald-500
+                                              borderColor: "#10b981", // emerald-500
+                                              backgroundColor: "rgba(16, 185, 129, 0.1)", // emerald-500 with alpha
+                                              transition: { duration: 0.2, ease: "easeOut" },
+                                            }}
+                                            whileTap={{ 
+                                              scale: 0.98,
+                                              backgroundColor: "rgba(16, 185, 129, 0.2)", // emerald-500 with higher alpha
+                                            }}
+                                          >
+                                            <span className="relative">Login</span>
+                                          </motion.custom>
                                         </motion.div>
                                         <motion.div 
                                             whileHover={{ scale: 1.05, y: -2 }} 
@@ -226,9 +240,44 @@ const NavBar = () => {
                                             animate="visible" 
                                             variants={navItemVariants}
                                         >
-                                            <Link href="/register" className="bg-emerald-600 hover:bg-emerald-500 text-white rounded-md px-4 py-2 text-sm font-medium transition-all duration-300 shadow-md hover:shadow-emerald-500/20">
-                                                Register
-                                            </Link>
+                                          <motion.custom
+                                            as={Link}
+                                            href="/register"
+                                            className="group relative inline-flex items-center justify-center px-4 py-2 overflow-hidden font-medium rounded-md bg-gradient-to-r from-emerald-600 to-teal-600 text-white shadow-md text-sm" // Adjusted base gradient slightly for variety, kept padding & font
+                                            whileHover={{
+                                              scale: 1.05, // Standard scale effect
+                                              transition: { duration: 0.2, ease: "easeOut" },
+                                            }}
+                                            whileTap={{ scale: 0.98 }}
+                                            style={{ backgroundSize: "200% 200%" }}
+                                            animate={{ backgroundPosition: ["0% 50%", "100% 50%", "0% 50%"] }}
+                                            transition={{
+                                              duration: 5,
+                                              ease: "linear",
+                                              repeat: Infinity,
+                                            }}
+                                          >
+                                            <motion.span 
+                                              className="absolute inset-0 w-full h-full bg-gradient-to-r from-purple-600 via-pink-500 to-red-500"
+                                              initial={{ opacity: 0 }}
+                                              whileHover={{ opacity: 1, transition: { duration: 0.3 } }}
+                                            />
+                                            <motion.span
+                                              className="absolute inset-0 w-full h-full block"
+                                              style={{
+                                                backgroundImage: "linear-gradient(120deg, transparent 0%, rgba(255,255,255,0.25) 50%, transparent 100%)", // Slightly less intense shine for smaller button
+                                                backgroundSize: "200% 100%",
+                                                backgroundPosition: "-200% 0",
+                                              }}
+                                              whileHover={{ 
+                                                backgroundPosition: ["-200% 0", "200% 0"],
+                                                transition: { duration: 0.8, ease: "easeInOut" } // Slightly faster shine
+                                              }}
+                                            />
+                                            <span className="relative"> {/* Text is relative to be on top */}
+                                              Register
+                                            </span>
+                                          </motion.custom>
                                         </motion.div>
                                     </div>
                                 )}
@@ -266,18 +315,27 @@ const NavBar = () => {
                                     initial="hidden"
                                     animate="visible"
                                     variants={navItemVariants}
+                                    whileHover={isActive(item.href) ? { scale: 1.01 } : { scale: 1.02, backgroundColor: "rgba(16, 185, 129, 0.1)" }} // Subtle bg for non-active
+                                    whileTap={{ scale: 0.97 }}
                                 >
                                     <Link href={item.href} 
                                         className={`
+                                            block rounded-md px-4 py-2.5 text-base font-medium transition-colors duration-150 ease-out
                                             ${isActive(item.href) 
                                                 ? 'bg-emerald-600 text-white' 
-                                                : 'text-white/90 hover:text-white hover:bg-emerald-600/50'
+                                                : 'text-white/90 hover:text-white' // Removed hover:bg-emerald-600/50
                                             } 
-                                            block rounded-md px-4 py-2.5 text-base font-medium transition-all
                                         `}
                                         onClick={() => setIsMobileMenuOpen(false)}
                                     >
                                         {item.name}
+                                         {isActive(item.href) && (
+                                            <motion.div 
+                                                layoutId="activeNavMobile" // Unique layoutId for mobile
+                                                className="absolute bottom-0 left-0 right-0 h-0.5 bg-white"
+                                                transition={{ duration: 0.3 }}
+                                            />
+                                        )}
                                     </Link>
                                 </motion.div>
                             ))}

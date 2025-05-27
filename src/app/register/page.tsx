@@ -2,6 +2,7 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
+import { motion } from 'framer-motion';
 
 export default function Register() {
   const [email, setEmail] = useState('');
@@ -38,7 +39,12 @@ export default function Register() {
 
   return (
     <div className="min-h-screen flex items-center justify-center px-4">
-      <div className="max-w-md w-full space-y-8 p-8 bg-slate-800/50 backdrop-blur-xl rounded-2xl border border-slate-700">
+      <motion.div 
+        className="max-w-md w-full space-y-8 p-8 bg-slate-800/50 backdrop-blur-xl rounded-2xl border border-slate-700"
+        initial={{ opacity: 0, y: 25, scale: 0.98 }}
+        animate={{ opacity: 1, y: 0, scale: 1 }}
+        transition={{ duration: 0.5, ease: "easeOut", delay: 0.1 }}
+      >
         <div>
           <h2 className="text-3xl font-bold text-center text-white mb-2">Create Account</h2>
           <p className="text-center text-emerald-400">Join the adventure today</p>
@@ -98,7 +104,7 @@ export default function Register() {
             Sign in
           </Link>
         </p>
-      </div>
+      </motion.div>
     </div>
   );
 }

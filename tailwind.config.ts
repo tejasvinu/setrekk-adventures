@@ -96,6 +96,7 @@ export default {
       },
       fontFamily: {
         sans: ['var(--font-montserrat)', 'system-ui', 'sans-serif'],
+        display: ['var(--font-oswald)', 'system-ui', 'sans-serif'],
       },
     },
   },

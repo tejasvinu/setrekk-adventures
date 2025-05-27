@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import "./globals.css";
 import { Analytics } from "@vercel/analytics/react"
 import { Suspense } from 'react';
-import { Montserrat } from 'next/font/google';
+import { Montserrat, Oswald } from 'next/font/google';
 import Providers from '@/components/Providers';
 import { SpeedInsights } from '@vercel/speed-insights/next';
 import { MountainLoader, ScrollToTop } from '@/components/CustomElements';
@@ -14,6 +14,13 @@ import Footer from '@/components/Footer/Footer';
 const montserrat = Montserrat({ 
   subsets: ['latin'],
   display: 'swap',
+  variable: '--font-montserrat',
+});
+
+const oswald = Oswald({
+  subsets: ['latin'],
+  display: 'swap',
+  variable: '--font-oswald',
 });
 
 export const viewport = {
@@ -78,7 +85,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className={`${montserrat.className} scroll-smooth`}>
+    <html lang="en" className={`${montserrat.variable} ${oswald.variable} font-sans scroll-smooth`}>
       <head>
         <meta charSet="utf-8" />
         <meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)" />

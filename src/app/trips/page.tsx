@@ -1,8 +1,8 @@
 "use client"
-import { useEffect, useState, useMemo } from "react";
+import { useEffect, useState, useMemo, useRef } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion, AnimatePresence, useScroll, useTransform } from "framer-motion";
 import { MountainLoader } from "@/components/CustomElements";
 
 interface UnifiedTrip {
@@ -49,36 +49,82 @@ const TripCard = ({ trip, index }: { trip: UnifiedTrip; index: number }) => {
     day: 'numeric'
   });
 
+  const cardVariants = {
+    initial: { opacity: 0, y: 20 },
+    animate: { opacity: 1, y: 0, transition: { duration: 0.5, delay: index * 0.1 } },
+  };
+
+  const imageContainerVariants = {
+    initial: { scale: 1.15, clipPath: "inset(0% 20% 0% 20%)" }, // Zoomed in and slightly cropped
+    animate: { 
+      scale: 1, 
+      clipPath: "inset(0% 0% 0% 0%)",
+      transition: { delay: (index * 0.1) + 0.2, duration: 0.6, ease: "circOut" } 
+    },
+  };
+  
+  const contentContainerVariants = {
+    hidden: { opacity: 0 },
+    visible: {
+      opacity: 1,
+      transition: { staggerChildren: 0.1, delayChildren: (index * 0.1) + 0.4 }
+    }
+  };
+
+  const itemVariants = {
+    hidden: { opacity: 0, y: 15 },
+    visible: { opacity: 1, y: 0, transition: { duration: 0.4, ease: 'easeOut' }}
+  };
+
   return (
     <motion.div
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.5, delay: index * 0.1 }}
-      whileHover={{ y: -10 }}
+      variants={cardVariants}
+      initial="initial"
+      animate="animate"
+      whileHover={{ 
+        y: -10, 
+        boxShadow: "0px 20px 30px -10px rgba(5, 150, 105, 0.25), 0px 8px 15px -8px rgba(5, 150, 105, 0.15)"
+      }}
+      className="group" // Added group here for the shine effect to target
     >
       <Link href={`/trips/${trip._id}`}>
-        <article className="relative bg-slate-800/80 backdrop-blur-sm rounded-xl overflow-hidden shadow-lg border border-slate-700 transition-all duration-300 hover:shadow-emerald-500/10 group">
-          {/* Card highlight glow effect - moved inside the article to be properly scoped */}
-          <div className="absolute inset-0 bg-gradient-to-r from-emerald-500 to-emerald-600 rounded-xl blur-lg opacity-0 group-hover:opacity-20 transition-opacity duration-300"/>
+        <article className="relative bg-slate-800/80 backdrop-blur-sm rounded-xl overflow-hidden shadow-lg border border-slate-700 transition-shadow duration-300"> {/* Removed hover:shadow-emerald-500/10, Framer motion handles hover shadow */}
+          <motion.div // Shine Effect Div
+            className="absolute inset-0 z-[1]"
+            style={{
+              backgroundImage: "linear-gradient(110deg, transparent 30%, rgba(255,255,255,0.1) 50%, transparent 70%)",
+              backgroundSize: "200% 100%",
+            }}
+            initial={{ backgroundPosition: "200% 0" }}
+            whileHover={{ 
+              backgroundPosition: ["-200% 0", "200% 0"], // This will only work if this div itself is hovered or parent `group` hover is handled by variants
+              transition: { duration: 1, ease: "linear", repeat: Infinity } // Looping shine on hover
+            }}
+          />
+          {/* Card highlight glow effect - can be kept or removed if shine is enough */}
+          <div className="absolute inset-0 bg-gradient-to-r from-emerald-500 to-emerald-600 rounded-xl blur-lg opacity-0 group-hover:opacity-10 transition-opacity duration-300 z-0"/>
           
-          <div className="relative h-56 overflow-hidden">
+          <motion.div 
+            className="relative h-56 overflow-hidden"
+            variants={imageContainerVariants} // Apply image animation variants
+          >
             <Image
               src={trip.tripImage}
               alt={trip.destination}
               fill
               sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
               priority={index < 6}
-              className="object-cover brightness-90 group-hover:brightness-100 group-hover:scale-105 transition-all duration-500"
+              className="object-cover brightness-90 group-hover:brightness-100 transition-all duration-500" // Removed group-hover:scale-105, handled by imageContainerVariants
             />
-            <div className="absolute inset-0 bg-gradient-to-t from-slate-900 via-slate-900/50 to-transparent" />
+            <div className="absolute inset-0 bg-gradient-to-t from-slate-900/80 via-slate-900/40 to-transparent z-[2]" /> {/* Ensure overlay is above image */}
             
-            {/* Top badges */}
-            <div className="absolute top-3 right-3 flex gap-2">
+            {/* Top badges - need z-index to be above image and its overlay */}
+            <div className="absolute top-3 right-3 flex gap-2 z-[3]">
               <DifficultyBadge level={trip.difficulty} />
             </div>
             
-            {/* Date badge */}
-            <div className="absolute top-3 left-3 bg-slate-800/80 backdrop-blur-sm text-white px-3 py-1 rounded-lg border border-slate-700 text-sm">
+            {/* Date badge - need z-index */}
+            <div className="absolute top-3 left-3 bg-slate-800/80 backdrop-blur-sm text-white px-3 py-1 rounded-lg border border-slate-700 text-sm z-[3]">
               <div className="flex items-center gap-1">
                 <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 text-emerald-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
@@ -86,40 +132,45 @@ const TripCard = ({ trip, index }: { trip: UnifiedTrip; index: number }) => {
                 {formattedDate}
               </div>
             </div>
-          </div>
+          </motion.div>
           
-          <div className="p-5">
-            <div className="flex justify-between items-start mb-3">
-              <h2 className="text-xl font-bold text-white group-hover:text-emerald-400 transition-colors">
+          <motion.div 
+            className="p-5 relative z-[2]" // Ensure content is above shine and glow effects
+            variants={contentContainerVariants}
+            initial="hidden"
+            animate="visible"
+          >
+            <motion.div variants={itemVariants} className="flex justify-between items-start mb-3">
+              <h2 className="font-display text-2xl font-bold text-white group-hover:text-emerald-400 transition-colors">
                 {trip.destination}
               </h2>
-              <span className="flex items-center gap-1 bg-slate-700/50 text-emerald-400 px-2 py-1 rounded-md text-sm">
+              <motion.span variants={itemVariants} className="flex items-center gap-1 bg-slate-700/50 text-emerald-400 px-2 py-1 rounded-md text-sm">
                 <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
                 </svg>
                 {tripDuration} days
-              </span>
-            </div>
+              </motion.span>
+            </motion.div>
             
             {trip.location && (
-              <div className="flex items-center gap-1 text-slate-400 mb-3">
+              <motion.div variants={itemVariants} className="flex items-center gap-1 text-slate-400 mb-3">
                 <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 text-emerald-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
                 </svg>
                 {trip.location}
-              </div>
+              </motion.div>
             )}
             
-            <div className="flex justify-between items-end mt-4">
-              <div>
+            <motion.div variants={itemVariants} className="flex justify-between items-end mt-4">
+              <motion.div variants={itemVariants}>
                 <p className="text-emerald-400 text-2xl font-bold">₹{trip.price}</p>
                 {trip.fullPrice > trip.price && (
                   <del className="text-slate-500 text-sm">₹{trip.fullPrice}</del>
                 )}
-              </div>
+              </motion.div>
               
-              <div className="bg-emerald-600/20 text-emerald-500 px-2 py-1 rounded-md text-sm font-medium flex items-center gap-1">
+              <motion.div variants={itemVariants} className="bg-emerald-600/20 text-emerald-500 px-2 py-1 rounded-md text-sm font-medium flex items-center gap-1">
                 <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
                 </svg>
@@ -134,6 +185,18 @@ const TripCard = ({ trip, index }: { trip: UnifiedTrip; index: number }) => {
 };
 
 export default function Trips() {
+  const heroRef = useRef<HTMLElement>(null);
+  const { scrollYProgress } = useScroll({
+    target: heroRef,
+    offset: ["start start", "end start"],
+  });
+
+  // Adjusted transform values for a potentially shorter hero section (50vh vs screen height)
+  const distantMountainY = useTransform(scrollYProgress, [0, 1], [0, 100]); 
+  const mainMountainsY = useTransform(scrollYProgress, [0, 1], [0, 30]);
+  const foregroundPatternY = useTransform(scrollYProgress, [0, 1], [0, -150]);
+  const overlayY = useTransform(scrollYProgress, [0, 1], [0, 10]);
+
   const [trips, setTrips] = useState<UnifiedTrip[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
@@ -216,19 +279,66 @@ export default function Trips() {
       <div className="absolute bottom-0 left-0 right-0 h-32 bg-mountains-silhouette bg-repeat-x bg-bottom opacity-5 pointer-events-none" />
       
       {/* Hero Section */}
-      <section className="relative min-h-[50vh] flex items-center justify-center overflow-hidden">
-        <div className="absolute inset-0">
-          <div className="absolute inset-0 bg-mountains bg-cover bg-center opacity-20" />
-          <div className="absolute inset-0 bg-gradient-to-b from-transparent via-slate-900/70 to-slate-900" />
-        </div>
+      <section ref={heroRef} className="relative min-h-[50vh] flex items-center justify-center overflow-hidden bg-slate-900">
+        {/* Parallax Layers */}
+        <motion.div
+          className="absolute inset-0 z-[1]"
+          style={{ y: distantMountainY, opacity: 0.5 }} 
+        >
+          <Image
+            src="/mountain.svg"
+            alt="Distant Mountain Silhouette"
+            layout="fill"
+            objectFit="cover"
+            quality={70}
+            className="opacity-40" 
+          />
+        </motion.div>
+
+        <motion.div
+          className="absolute inset-0 z-[2]"
+          style={{ y: mainMountainsY }} 
+        >
+          <Image
+            src="/mountains.svg" 
+            alt="Main Mountains Backdrop"
+            layout="fill"
+            objectFit="cover" 
+            quality={80}
+            className="opacity-30 scale-105 origin-bottom" // Maintain some opacity from original, adjust scale/origin as needed
+          />
+        </motion.div>
         
+        <motion.div
+          className="absolute inset-x-0 bottom-0 h-1/4 z-[3] text-slate-800" 
+          style={{
+            y: foregroundPatternY,
+            backgroundImage: 'url(/mountain-pattern.svg)',
+            backgroundRepeat: 'repeat-x',
+            backgroundSize: 'contain',
+            backgroundPosition: 'bottom center',
+            opacity: 0.15, 
+          }}
+        />
+
+        {/* Gradient Overlays */}
+        <motion.div 
+          className="absolute inset-0 z-[4]"
+          style={{ y: overlayY }}
+        >
+          {/* This replaces the original opacity-20 bg-mountains and the gradient-to-b overlay */}
+          <div className="absolute inset-0 bg-gradient-to-b from-transparent via-slate-900/60 to-slate-900/90" />
+          <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(15,23,42,0.1)_0%,rgba(15,23,42,0.7)_70%)]" />
+        </motion.div>
+        
+        {/* Content Layer */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8 }}
-          className="container mx-auto px-4 md:px-6 text-center relative z-10"
+          className="container mx-auto px-4 md:px-6 text-center relative z-10" // Ensure content is above parallax layers
         >
-          <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold text-white mb-4">
+           <h1 className="font-display text-4xl sm:text-5xl md:text-6xl font-bold text-white mb-4">
             Discover Your Next Adventure
           </h1>
           <p className="text-emerald-300 text-xl max-w-2xl mx-auto mb-8">
@@ -254,7 +364,7 @@ export default function Trips() {
 
         {/* Animated arrow down indicator */}
         <motion.div 
-          className="absolute bottom-8 left-1/2 transform -translate-x-1/2"
+          className="absolute bottom-8 left-1/2 transform -translate-x-1/2 z-10" // Ensure scroll indicator is above parallax layers
           animate={{ y: [0, 10, 0] }}
           transition={{ repeat: Infinity, duration: 2 }}
         >
@@ -265,15 +375,26 @@ export default function Trips() {
       </section>
 
       {/* Sticky Filter Bar */}
-      <div className={`${isSticky ? 'sticky top-0 z-30 py-3 shadow-lg' : 'py-6'} bg-slate-900/80 backdrop-blur-md transition-all duration-300`}>
+      <div className={`${isSticky ? 'sticky top-0 z-30 py-3 shadow-lg' : 'py-6'} bg-slate-900/80 backdrop-blur-md transition-all duration-300 z-20`}> 
         <div className="container mx-auto px-4 md:px-6">
           <div className="flex justify-between items-center">
             <h2 className="text-2xl font-bold text-white">
               {filteredTrips.length} {filteredTrips.length === 1 ? 'Adventure' : 'Adventures'} Available
             </h2>
-            <button 
+            <motion.button 
               onClick={() => setShowFilters(!showFilters)} 
-              className="flex items-center gap-2 bg-slate-800 hover:bg-slate-700 text-white px-4 py-2 rounded-lg transition-colors"
+              className="relative inline-flex items-center justify-center gap-2 px-4 py-2 font-medium text-slate-300 rounded-lg border border-slate-600 transition-colors duration-300 ease-out"
+              whileHover={{
+                scale: 1.03,
+                color: "#10b981", // emerald-500
+                borderColor: "#10b981", // emerald-500
+                backgroundColor: "rgba(16, 185, 129, 0.1)", 
+                transition: { duration: 0.2, ease: "easeOut" },
+              }}
+              whileTap={{ 
+                scale: 0.98,
+                backgroundColor: "rgba(16, 185, 129, 0.2)",
+              }}
             >
               <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z" />
@@ -305,28 +426,34 @@ export default function Trips() {
                     Month
                   </h3>
                   <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
-                    <button
-                      className={`px-3 py-2 rounded-lg text-sm ${
+                    <motion.button
+                      className={`relative inline-flex items-center justify-center px-3 py-2 rounded-lg text-sm font-medium transition-colors duration-300 ease-out ${
                         selectedMonth === 0
-                          ? 'bg-emerald-500 text-white'
-                          : 'bg-slate-700 text-slate-300 hover:bg-slate-600'
+                          ? 'bg-emerald-500 text-white border border-emerald-500'
+                          : 'border border-slate-700 text-slate-300 bg-transparent'
                       }`}
                       onClick={() => setSelectedMonth(0)}
+                      whileHover={selectedMonth === 0 ? { scale: 1.02, filter: "brightness(1.1)" } : { scale: 1.03, color: "#10b981", borderColor: "#10b981", backgroundColor: "rgba(16, 185, 129, 0.1)" }}
+                      whileTap={{ scale: 0.98, backgroundColor: selectedMonth === 0 ? "rgba(5, 150, 105, 0.9)" : "rgba(16, 185, 129, 0.2)"}}
+                      transition={{ duration: 0.2, ease: "easeOut" }}
                     >
                       All Months
-                    </button>
+                    </motion.button>
                     {months.map((month) => (
-                      <button
+                      <motion.button
                         key={month}
-                        className={`px-3 py-2 rounded-lg text-sm ${
+                        className={`relative inline-flex items-center justify-center px-3 py-2 rounded-lg text-sm font-medium transition-colors duration-300 ease-out ${
                           selectedMonth === month
-                            ? 'bg-emerald-500 text-white'
-                            : 'bg-slate-700 text-slate-300 hover:bg-slate-600'
+                            ? 'bg-emerald-500 text-white border border-emerald-500'
+                            : 'border border-slate-700 text-slate-300 bg-transparent'
                         }`}
                         onClick={() => setSelectedMonth(month)}
+                        whileHover={selectedMonth === month ? { scale: 1.02, filter: "brightness(1.1)" } : { scale: 1.03, color: "#10b981", borderColor: "#10b981", backgroundColor: "rgba(16, 185, 129, 0.1)" }}
+                        whileTap={{ scale: 0.98, backgroundColor: selectedMonth === month ? "rgba(5, 150, 105, 0.9)" : "rgba(16, 185, 129, 0.2)"}}
+                        transition={{ duration: 0.2, ease: "easeOut" }}
                       >
                         {getMonthName(month)}
-                      </button>
+                      </motion.button>
                     ))}
                   </div>
                 </div>
@@ -340,28 +467,34 @@ export default function Trips() {
                     Week
                   </h3>
                   <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
-                    <button
-                      className={`px-3 py-2 rounded-lg text-sm ${
+                    <motion.button
+                      className={`relative inline-flex items-center justify-center px-3 py-2 rounded-lg text-sm font-medium transition-colors duration-300 ease-out ${
                         selectedWeek === 0
-                          ? 'bg-emerald-500 text-white'
-                          : 'bg-slate-700 text-slate-300 hover:bg-slate-600'
+                          ? 'bg-emerald-500 text-white border border-emerald-500'
+                          : 'border border-slate-700 text-slate-300 bg-transparent'
                       }`}
                       onClick={() => setSelectedWeek(0)}
+                      whileHover={selectedWeek === 0 ? { scale: 1.02, filter: "brightness(1.1)" } : { scale: 1.03, color: "#10b981", borderColor: "#10b981", backgroundColor: "rgba(16, 185, 129, 0.1)" }}
+                      whileTap={{ scale: 0.98, backgroundColor: selectedWeek === 0 ? "rgba(5, 150, 105, 0.9)" : "rgba(16, 185, 129, 0.2)"}}
+                      transition={{ duration: 0.2, ease: "easeOut" }}
                     >
                       All Weeks
-                    </button>
+                    </motion.button>
                     {weeks.map((week) => (
-                      <button
+                      <motion.button
                         key={week}
-                        className={`px-3 py-2 rounded-lg text-sm ${
+                        className={`relative inline-flex items-center justify-center px-3 py-2 rounded-lg text-sm font-medium transition-colors duration-300 ease-out ${
                           selectedWeek === week
-                            ? 'bg-emerald-500 text-white'
-                            : 'bg-slate-700 text-slate-300 hover:bg-slate-600'
+                            ? 'bg-emerald-500 text-white border border-emerald-500'
+                            : 'border border-slate-700 text-slate-300 bg-transparent'
                         }`}
                         onClick={() => setSelectedWeek(week)}
+                        whileHover={selectedWeek === week ? { scale: 1.02, filter: "brightness(1.1)" } : { scale: 1.03, color: "#10b981", borderColor: "#10b981", backgroundColor: "rgba(16, 185, 129, 0.1)" }}
+                        whileTap={{ scale: 0.98, backgroundColor: selectedWeek === week ? "rgba(5, 150, 105, 0.9)" : "rgba(16, 185, 129, 0.2)"}}
+                        transition={{ duration: 0.2, ease: "easeOut" }}
                       >
                         Week {week}
-                      </button>
+                      </motion.button>
                     ))}
                   </div>
                 </div>
@@ -375,28 +508,34 @@ export default function Trips() {
                     Difficulty
                   </h3>
                   <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
-                    <button
-                      className={`px-3 py-2 rounded-lg text-sm ${
+                    <motion.button
+                      className={`relative inline-flex items-center justify-center px-3 py-2 rounded-lg text-sm font-medium transition-colors duration-300 ease-out ${
                         selectedDifficulty === ''
-                          ? 'bg-emerald-500 text-white'
-                          : 'bg-slate-700 text-slate-300 hover:bg-slate-600'
+                          ? 'bg-emerald-500 text-white border border-emerald-500'
+                          : 'border border-slate-700 text-slate-300 bg-transparent'
                       }`}
                       onClick={() => setSelectedDifficulty('')}
+                      whileHover={selectedDifficulty === '' ? { scale: 1.02, filter: "brightness(1.1)" } : { scale: 1.03, color: "#10b981", borderColor: "#10b981", backgroundColor: "rgba(16, 185, 129, 0.1)" }}
+                      whileTap={{ scale: 0.98, backgroundColor: selectedDifficulty === '' ? "rgba(5, 150, 105, 0.9)" : "rgba(16, 185, 129, 0.2)"}}
+                      transition={{ duration: 0.2, ease: "easeOut" }}
                     >
                       All Levels
-                    </button>
+                    </motion.button>
                     {['Easy', 'Moderate', 'Difficult', 'Extreme'].map((difficulty) => (
-                      <button
+                      <motion.button
                         key={difficulty}
-                        className={`px-3 py-2 rounded-lg text-sm ${
+                        className={`relative inline-flex items-center justify-center px-3 py-2 rounded-lg text-sm font-medium transition-colors duration-300 ease-out ${
                           selectedDifficulty === difficulty
-                            ? 'bg-emerald-500 text-white'
-                            : 'bg-slate-700 text-slate-300 hover:bg-slate-600'
+                            ? 'bg-emerald-500 text-white border border-emerald-500'
+                            : 'border border-slate-700 text-slate-300 bg-transparent'
                         }`}
                         onClick={() => setSelectedDifficulty(difficulty)}
+                        whileHover={selectedDifficulty === difficulty ? { scale: 1.02, filter: "brightness(1.1)" } : { scale: 1.03, color: "#10b981", borderColor: "#10b981", backgroundColor: "rgba(16, 185, 129, 0.1)" }}
+                        whileTap={{ scale: 0.98, backgroundColor: selectedDifficulty === difficulty ? "rgba(5, 150, 105, 0.9)" : "rgba(16, 185, 129, 0.2)"}}
+                        transition={{ duration: 0.2, ease: "easeOut" }}
                       >
                         {difficulty}
-                      </button>
+                      </motion.button>
                     ))}
                   </div>
                 </div>
@@ -417,7 +556,7 @@ export default function Trips() {
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
                   </svg>
                   Clear All Filters
-                </button>
+                </motion.button>
               </div>
             </div>
           </motion.div>

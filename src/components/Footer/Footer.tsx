@@ -81,60 +81,62 @@ function Footer() {
                     <motion.div variants={itemAnimation} className="space-y-4">
                         <h3 className="text-sm font-semibold text-emerald-400 uppercase tracking-wider">Explore</h3>
                         <ul className="space-y-2">
-                            <li>
-                                <Link href="/trips" className="text-sm text-slate-300 hover:text-emerald-300 transition-colors flex items-center">
-                                    <svg className="w-3 h-3 mr-1.5" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                            {[
+                                { href: "/trips", label: "All Trips" },
+                                { href: "/blog", label: "Blog" },
+                                { href: "/calendar", label: "Calendar" }
+                            ].map(link => (
+                            <li key={link.href}>
+                                <motion.custom
+                                    as={Link}
+                                    href={link.href}
+                                    className="text-sm text-slate-300 transition-colors duration-200 ease-out flex items-center group"
+                                    whileHover={{ 
+                                        scale: 1.03, 
+                                        x: 2,
+                                        color: "#34d399", // emerald-400
+                                        transition: { duration: 0.2 }
+                                    }}
+                                    whileTap={{ scale: 0.97 }}
+                                >
+                                    <svg className="w-3 h-3 mr-1.5 text-slate-500 group-hover:text-emerald-500 transition-colors duration-200" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
                                         <path fillRule="evenodd" d="M10.293 5.293a1 1 0 011.414 0l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414-1.414L12.586 11H5a1 1 0 110-2h7.586l-2.293-2.293a1 1 0 010-1.414z" clipRule="evenodd"></path>
                                     </svg>
-                                    All Trips
-                                </Link>
+                                    <span className="group-hover:underline">{link.label}</span>
+                                </motion.custom>
                             </li>
-                            <li>
-                                <Link href="/blog" className="text-sm text-slate-300 hover:text-emerald-300 transition-colors flex items-center">
-                                    <svg className="w-3 h-3 mr-1.5" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
-                                        <path fillRule="evenodd" d="M10.293 5.293a1 1 0 011.414 0l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414-1.414L12.586 11H5a1 1 0 110-2h7.586l-2.293-2.293a1 1 0 010-1.414z" clipRule="evenodd"></path>
-                                    </svg>
-                                    Blog
-                                </Link>
-                            </li>
-                            <li>
-                                <Link href="/calendar" className="text-sm text-slate-300 hover:text-emerald-300 transition-colors flex items-center">
-                                    <svg className="w-3 h-3 mr-1.5" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
-                                        <path fillRule="evenodd" d="M10.293 5.293a1 1 0 011.414 0l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414-1.414L12.586 11H5a1 1 0 110-2h7.586l-2.293-2.293a1 1 0 010-1.414z" clipRule="evenodd"></path>
-                                    </svg>
-                                    Calendar
-                                </Link>
-                            </li>
+                            ))}
                         </ul>
                     </motion.div>
 
                     <motion.div variants={itemAnimation} className="space-y-4">
                         <h3 className="text-sm font-semibold text-emerald-400 uppercase tracking-wider">Company</h3>
                         <ul className="space-y-2">
-                            <li>
-                                <Link href="/about" className="text-sm text-slate-300 hover:text-emerald-300 transition-colors flex items-center">
-                                    <svg className="w-3 h-3 mr-1.5" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                            {[
+                                { href: "/about", label: "About Us" },
+                                { href: "/contact", label: "Contact Us" },
+                                { href: "/faq", label: "FAQ" }
+                            ].map(link => (
+                            <li key={link.href}>
+                                <motion.custom
+                                    as={Link}
+                                    href={link.href}
+                                    className="text-sm text-slate-300 transition-colors duration-200 ease-out flex items-center group"
+                                    whileHover={{ 
+                                        scale: 1.03, 
+                                        x: 2,
+                                        color: "#34d399", // emerald-400
+                                        transition: { duration: 0.2 }
+                                    }}
+                                    whileTap={{ scale: 0.97 }}
+                                >
+                                    <svg className="w-3 h-3 mr-1.5 text-slate-500 group-hover:text-emerald-500 transition-colors duration-200" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
                                         <path fillRule="evenodd" d="M10.293 5.293a1 1 0 011.414 0l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414-1.414L12.586 11H5a1 1 0 110-2h7.586l-2.293-2.293a1 1 0 010-1.414z" clipRule="evenodd"></path>
                                     </svg>
-                                    About Us
-                                </Link>
+                                    <span className="group-hover:underline">{link.label}</span>
+                                </motion.custom>
                             </li>
-                            <li>
-                                <Link href="/contact" className="text-sm text-slate-300 hover:text-emerald-300 transition-colors flex items-center">
-                                    <svg className="w-3 h-3 mr-1.5" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
-                                        <path fillRule="evenodd" d="M10.293 5.293a1 1 0 011.414 0l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414-1.414L12.586 11H5a1 1 0 110-2h7.586l-2.293-2.293a1 1 0 010-1.414z" clipRule="evenodd"></path>
-                                    </svg>
-                                    Contact Us
-                                </Link>
-                            </li>
-                            <li>
-                                <Link href="/faq" className="text-sm text-slate-300 hover:text-emerald-300 transition-colors flex items-center">
-                                    <svg className="w-3 h-3 mr-1.5" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
-                                        <path fillRule="evenodd" d="M10.293 5.293a1 1 0 011.414 0l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414-1.414L12.586 11H5a1 1 0 110-2h7.586l-2.293-2.293a1 1 0 010-1.414z" clipRule="evenodd"></path>
-                                    </svg>
-                                    FAQ
-                                </Link>
-                            </li>
+                            ))}
                         </ul>
                     </motion.div>
                 </div>
@@ -153,6 +155,7 @@ function Footer() {
                             target="_blank" 
                             rel="noopener noreferrer"
                             whileHover={{ scale: 1.1, color: '#1DA1F2' }}
+                            whileTap={{ scale: 0.95 }}
                             className="text-slate-400"
                             aria-label="Twitter"
                         >
@@ -164,7 +167,8 @@ function Footer() {
                             href="https://github.com" 
                             target="_blank" 
                             rel="noopener noreferrer"
-                            whileHover={{ scale: 1.1, color: '#white' }}
+                            whileHover={{ scale: 1.1, color: '#ffffff' }} // Changed to white for better visibility
+                            whileTap={{ scale: 0.95 }}
                             className="text-slate-400"
                             aria-label="GitHub"
                         >
@@ -177,6 +181,7 @@ function Footer() {
                             target="_blank" 
                             rel="noopener noreferrer"
                             whileHover={{ scale: 1.1, color: '#E1306C' }}
+                            whileTap={{ scale: 0.95 }}
                             className="text-slate-400"
                             aria-label="Instagram"
                         >

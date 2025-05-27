@@ -1,11 +1,24 @@
 "use client"
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { UnifiedTrip } from "@/types/trip";
-import { motion } from "framer-motion";
+import { motion, useScroll, useTransform } from "framer-motion";
 
 export default function Home() {
+  const heroRef = useRef<HTMLElement>(null);
+  const { scrollYProgress } = useScroll({
+    target: heroRef,
+    offset: ["start start", "end start"],
+  });
+
+  const distantMountainY = useTransform(scrollYProgress, [0, 1], [0, 150]);
+  const mainMountainsY = useTransform(scrollYProgress, [0, 1], [0, 50]);
+  const foregroundPatternY = useTransform(scrollYProgress, [0, 1], [0, -250]);
+  // Optional: A slight movement for overlays if needed, or keep them static
+  const overlayY = useTransform(scrollYProgress, [0, 1], [0, 20]);
+
+
   const [latestTrips, setLatestTrips] = useState<UnifiedTrip[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
@@ -32,29 +45,69 @@ export default function Home() {
   return (
     <div className="w-full overflow-hidden bg-gradient-to-b from-slate-50 to-white">
       {/* Hero Section with Parallax */}
-      <section className="relative min-h-screen flex items-center justify-center bg-slate-900">
-        <motion.div 
-          initial={{ scale: 1.1, opacity: 0 }}
-          animate={{ scale: 1, opacity: 1 }}
-          transition={{ duration: 2, ease: "easeOut" }}
-          className="absolute inset-0 overflow-hidden"
+      <section ref={heroRef} className="relative min-h-screen flex items-center justify-center bg-slate-900 overflow-hidden">
+        {/* Parallax Layers */}
+        <motion.div
+          className="absolute inset-0 z-0" // Sky or furthest back (can be a CSS gradient in bg-slate-900 or specific color)
         >
-          <div 
-            className="absolute inset-0 bg-mountains bg-cover bg-center transform scale-110 origin-center"
-            style={{ 
-              backgroundAttachment: 'fixed',
-              willChange: 'transform',
-            }} 
+          {/* Optional: Could add animated stars here if desired */}
+        </motion.div>
+
+        <motion.div
+          className="absolute inset-0 z-[1]"
+          style={{ y: distantMountainY, opacity: 0.6 }} // Distant mountains, move slowly
+        >
+          <Image
+            src="/mountain.svg"
+            alt="Distant Mountain"
+            layout="fill"
+            objectFit="cover"
+            quality={70}
+            className="opacity-50" // Further reduce intrinsic opacity if needed
           />
+        </motion.div>
+
+        <motion.div
+          className="absolute inset-0 z-[2]"
+          style={{ y: mainMountainsY }} // Main mountains, move a bit faster than sky
+        >
+          <Image
+            src="/mountains.svg" // This is the one that had bg-mountains class before
+            alt="Main Mountains"
+            layout="fill"
+            objectFit="cover" 
+            quality={85}
+            className="transform scale-110 origin-bottom" // Match previous scale
+          />
+        </motion.div>
+        
+        <motion.div
+          className="absolute inset-x-0 bottom-0 h-1/3 z-[3] text-slate-700" // Foreground pattern layer
+          style={{
+            y: foregroundPatternY,
+            backgroundImage: 'url(/mountain-pattern.svg)',
+            backgroundRepeat: 'repeat-x',
+            backgroundSize: 'contain', // Or 'auto 100%' to scale height
+            backgroundPosition: 'bottom center',
+            opacity: 0.2, // Make it subtle
+          }}
+        />
+
+        {/* Gradient Overlays - On top of images but below text */}
+        <motion.div 
+          className="absolute inset-0 z-[4]"
+          style={{ y: overlayY }} // Optional slight movement for overlays
+        >
           <div className="absolute inset-0 bg-gradient-to-r from-slate-900/95 via-slate-900/80 to-slate-900/60" />
           <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,transparent_0%,rgba(15,23,42,0.8)_100%)]" />
         </motion.div>
 
+        {/* Content Layer */}
         <motion.div 
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 1, delay: 0.5 }}
-          className="container mx-auto px-4 md:px-6 z-20 text-white relative"
+          className="container mx-auto px-4 md:px-6 z-10 text-white relative" // z-10 to be above image layers and overlays
         >
           <div className="max-w-4xl mx-auto text-center">
             <motion.div
@@ -62,7 +115,7 @@ export default function Home() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8, delay: 0.8 }}
             >
-              <h1 className="text-5xl sm:text-6xl md:text-7xl xl:text-8xl font-bold mb-6 leading-tight tracking-tight">
+              <h1 className="font-display text-5xl sm:text-6xl md:text-7xl xl:text-8xl font-bold mb-6 leading-tight tracking-tight">
                 Trek the <span className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 to-teal-500">Untamed</span>
               </h1>
               <p className="text-xl sm:text-2xl md:text-3xl mb-8 text-gray-300 font-light">
@@ -77,26 +130,76 @@ export default function Home() {
               transition={{ duration: 0.8, delay: 1.2 }}
               className="flex flex-col sm:flex-row gap-6 justify-center items-center"
             >
-              <Link
+              <motion.custom
+                as={Link}
                 href="/trips"
-                className="group relative inline-flex items-center justify-center px-8 py-4 overflow-hidden font-bold rounded-lg bg-gradient-to-r from-emerald-500 to-teal-500 text-white transition-all duration-300 ease-out hover:scale-105 hover:shadow-2xl"
+                className="group relative inline-flex items-center justify-center px-8 py-4 overflow-hidden font-bold rounded-lg bg-gradient-to-r from-emerald-500 to-teal-500 text-white shadow-lg"
+                whileHover={{
+                  scale: 1.05,
+                  transition: { duration: 0.2, ease: "easeOut" },
+                }}
+                whileTap={{ scale: 0.98 }}
+                style={{ backgroundSize: "200% 200%" }}
+                animate={{ backgroundPosition: ["0% 50%", "100% 50%", "0% 50%"] }}
+                transition={{ // This transition is for the continuous animation of backgroundPosition
+                  duration: 5,
+                  ease: "linear",
+                  repeat: Infinity,
+                }}
               >
-                <span className="absolute inset-0 w-full h-full bg-gradient-to-br from-blue-500 via-purple-500 to-pink-500 opacity-0 group-hover:opacity-50 transition-opacity"></span>
+                {/* This span is for the hover gradient effect */}
+                <motion.span 
+                  className="absolute inset-0 w-full h-full bg-gradient-to-r from-purple-600 via-pink-500 to-red-500"
+                  initial={{ opacity: 0 }}
+                  whileHover={{ opacity: 1, transition: { duration: 0.3 } }}
+                />
+                {/* Shine effect span */}
+                <motion.span
+                  className="absolute inset-0 w-full h-full block"
+                  style={{
+                    backgroundImage: "linear-gradient(120deg, transparent 0%, rgba(255,255,255,0.3) 50%, transparent 100%)",
+                    backgroundSize: "200% 100%",
+                    backgroundPosition: "-200% 0",
+                  }}
+                  whileHover={{ 
+                    backgroundPosition: ["-200% 0", "200% 0"],
+                    transition: { duration: 0.7, ease: "easeInOut" }
+                  }}
+                />
                 <span className="relative flex items-center gap-2">
                   Explore Treks
-                  <svg className="w-5 h-5 transition-transform group-hover:translate-x-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <motion.svg 
+                    className="w-5 h-5" 
+                    fill="none" 
+                    stroke="currentColor" 
+                    viewBox="0 0 24 24"
+                    initial={{ x: 0 }}
+                    whileHover={{ x: 5, transition: { type: "spring", stiffness: 300 } }}
+                  >
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
-                  </svg>
+                  </motion.svg>
                 </span>
-              </Link>
+              </motion.custom>
 
-              <Link
+              <motion.custom
+                as={Link}
                 href="/about"
-                className="group relative inline-flex items-center justify-center px-8 py-4 font-bold text-white rounded-lg overflow-hidden border-2 border-white/30 hover:border-white/60 transition-all duration-300"
+                className="relative inline-flex items-center justify-center px-8 py-4 font-bold text-slate-300 rounded-lg border-2 border-slate-500 transition-colors duration-300 ease-out"
+                whileHover={{
+                  scale: 1.03,
+                  color: "#ffffff",
+                  borderColor: "#cbd5e1", // slate-300 for a brighter border
+                  backgroundColor: "rgba(203, 213, 225, 0.05)", // very subtle slate-300 with alpha
+                  transition: { duration: 0.2, ease: "easeOut" },
+                }}
+                whileTap={{ 
+                  scale: 0.98,
+                  backgroundColor: "rgba(203, 213, 225, 0.1)", // slightly more opaque
+                }}
               >
                 <span className="relative">Our Story</span>
-                <span className="absolute inset-0 bg-white/10 opacity-0 group-hover:opacity-100 transition-opacity"></span>
-              </Link>
+                {/* The previous hover span for bg is removed, handled by Framer Motion now */}
+              </motion.custom>
             </motion.div>
           </div>
         </motion.div>
@@ -128,7 +231,7 @@ export default function Home() {
             viewport={{ once: true }}
             className="text-center mb-16"
           >
-            <h2 className="text-4xl md:text-5xl font-bold mb-6 text-slate-900">
+            <h2 className="font-display text-4xl md:text-5xl font-bold mb-6 text-slate-900">
               Featured <span className="text-emerald-600">Expeditions</span>
             </h2>
             <div className="w-24 h-1 bg-gradient-to-r from-emerald-500 to-teal-500 mx-auto rounded-full" />
@@ -187,7 +290,7 @@ export default function Home() {
       {/* Features Section */}
       <section className="py-20 bg-slate-900 text-white relative">
         <div className="container mx-auto px-6">
-          <h2 className="text-4xl font-bold mb-16 text-center">Why Trek with Us</h2>
+          <h2 className="font-display text-4xl font-bold mb-16 text-center">Why Trek with Us</h2>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-12">
             {features.map((feature) => (
               <motion.div
@@ -219,7 +322,7 @@ export default function Home() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
             >
-              <h2 className="text-3xl md:text-4xl font-bold mb-4 text-slate-800">
+              <h2 className="font-display text-3xl md:text-4xl font-bold mb-4 text-slate-800">
                 What Our <span className="text-emerald-600">Trekkers Say</span>
               </h2>
               <p className="text-slate-600 text-lg mb-6">Real experiences from real adventurers</p>
@@ -301,25 +404,64 @@ export default function Home() {
           viewport={{ once: true }}
           className="container mx-auto px-6 relative z-10 text-center text-white"
         >
-          <h2 className="text-5xl md:text-6xl font-bold mb-8">
+          <h2 className="font-display text-5xl md:text-6xl font-bold mb-8">
             Your Next Adventure Awaits
           </h2>
           <p className="text-xl mb-12 text-gray-300 max-w-2xl mx-auto">
             Join our community of adventurers and discover the magic of the mountains. Book your trek today and create memories that last a lifetime.
           </p>
           <motion.div
-            whileHover={{ scale: 1.05 }}
-            className="inline-block"
+            // whileHover={{ scale: 1.05 }} // This will be handled by the motion.custom Link
+            className="inline-block" // Keep for layout if necessary
           >
-            <Link
+            <motion.custom
+              as={Link}
               href="/trips"
-              className="bg-white text-emerald-800 px-8 py-4 rounded-lg text-lg font-semibold hover:bg-emerald-50 transition-colors inline-flex items-center gap-2 shadow-lg"
+              className="group relative inline-flex items-center justify-center px-8 py-4 overflow-hidden font-bold rounded-lg bg-gradient-to-r from-emerald-500 to-teal-500 text-white shadow-lg text-lg" // Changed text color, adjusted font-weight
+              whileHover={{
+                scale: 1.05,
+                transition: { duration: 0.2, ease: "easeOut" },
+              }}
+              whileTap={{ scale: 0.98 }}
+              style={{ backgroundSize: "200% 200%" }}
+              animate={{ backgroundPosition: ["0% 50%", "100% 50%", "0% 50%"] }}
+              transition={{
+                duration: 5,
+                ease: "linear",
+                repeat: Infinity,
+              }}
             >
-              Find Your Trek
-              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
-              </svg>
-            </Link>
+              <motion.span 
+                className="absolute inset-0 w-full h-full bg-gradient-to-r from-purple-600 via-pink-500 to-red-500"
+                initial={{ opacity: 0 }}
+                whileHover={{ opacity: 1, transition: { duration: 0.3 } }}
+              />
+              <motion.span
+                className="absolute inset-0 w-full h-full block"
+                style={{
+                  backgroundImage: "linear-gradient(120deg, transparent 0%, rgba(255,255,255,0.3) 50%, transparent 100%)",
+                  backgroundSize: "200% 100%",
+                  backgroundPosition: "-200% 0",
+                }}
+                whileHover={{ 
+                  backgroundPosition: ["-200% 0", "200% 0"],
+                  transition: { duration: 0.7, ease: "easeInOut" }
+                }}
+              />
+              <span className="relative flex items-center gap-2">
+                Find Your Trek
+                <motion.svg 
+                  className="w-5 h-5" // Kept size
+                  fill="none" 
+                  stroke="currentColor" 
+                  viewBox="0 0 24 24"
+                  initial={{ x: 0 }}
+                  whileHover={{ x: 5, transition: { type: "spring", stiffness: 300 } }}
+                >
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
+                </motion.svg>
+              </span>
+            </motion.custom>
           </motion.div>
         </motion.div>
       </section>

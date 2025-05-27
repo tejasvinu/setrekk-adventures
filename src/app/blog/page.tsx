@@ -46,7 +46,7 @@ export default function Blog() {
             <motion.h1 
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              className="text-4xl sm:text-5xl md:text-7xl font-bold text-white mb-4 md:mb-6 tracking-tight"
+               className="font-display text-4xl sm:text-5xl md:text-7xl font-bold text-white mb-4 md:mb-6 tracking-tight"
             >
               Trek Stories & Adventures
             </motion.h1>
@@ -92,10 +92,11 @@ export default function Blog() {
             {posts.map((post, index) => (
               <motion.div
                 key={post._id?.toString()}
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: index * 0.1 }}
-                className="relative z-10"
+                custom={index} // Pass index for stagger calculation
+                variants={cardEntryVariants} // Use card entry variants
+                initial="initial"
+                animate="animate"
+                className="relative z-10 group" // Added group for shine hover state
               >
                 {/* Mobile Layout */}
                 <div className="block md:hidden">
@@ -103,25 +104,45 @@ export default function Blog() {
                     {/* Trail Marker - Mobile */}
                     <div className="absolute left-[22px] top-4 w-3 h-3 bg-emerald-600 rounded-full ring-[3px] ring-white shadow-sm z-10" />
                     
-                    <Link href={`/blog/${post._id}`} className="block focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:ring-offset-2 rounded-xl">
-                      <motion.div 
-                        whileHover={{ y: -4 }}
-                        transition={{ duration: 0.2 }}
-                        className="bg-white rounded-xl shadow-sm hover:shadow-md transition-all duration-300 overflow-hidden relative border border-slate-100/50"
+                    <motion.custom // Wrap Link with motion.custom
+                      as={Link}
+                      href={`/blog/${post._id}`} 
+                      className="block focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:ring-offset-2 rounded-xl"
+                      whileHover={{ 
+                        y: -6, // Slightly more lift
+                        boxShadow: "0px 10px 20px -8px rgba(0, 0, 0, 0.15), 0px 6px 8px -6px rgba(0, 0, 0, 0.1)"
+                      }}
+                      transition={{ duration: 0.2, ease: "easeOut" }}
+                    >
+                      <div // This div becomes the main visual card for hover effects.
+                        className="bg-white rounded-xl shadow-sm transition-shadow duration-300 overflow-hidden relative border border-slate-100/50"
                       >
+                        <motion.div // Shine Effect Div
+                          className="absolute inset-0 z-10"
+                          style={{
+                            backgroundImage: "linear-gradient(110deg, transparent 30%, rgba(255,255,255,0.25) 50%, transparent 70%)",
+                            backgroundSize: "200% 100%",
+                          }}
+                          variants={shineVariants}
+                          initial="rest"
+                          whileHover="hover" // Will trigger when parent motion.custom(Link) is hovered
+                        />
                         {post.image && (
-                          <div className="relative h-[240px] overflow-hidden">
+                          <motion.div 
+                            className="relative h-[240px] overflow-hidden"
+                            variants={imageAppearVariants} // Use defined variants
+                          >
                             <Image 
                               src={post.image} 
                               alt={post.title}
                               fill
-                              className="object-cover transition-transform duration-500 hover:scale-105"
+                              className="object-cover" // Removed hover:scale-105, handled by variants
                             />
                             {/* Gradient Overlay */}
-                            <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/30 to-transparent" />
+                            <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/30 to-transparent z-[1]" />
                             
                             {/* Location Badge */}
-                            <div className="absolute top-3 right-3 bg-white/95 backdrop-blur-sm px-3 py-1.5 rounded-full shadow-sm">
+                            <div className="absolute top-3 right-3 bg-white/95 backdrop-blur-sm px-3 py-1.5 rounded-full shadow-sm z-[2]">
                               <div className="flex items-center gap-1.5 text-xs font-medium text-slate-700">
                                 <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
@@ -131,15 +152,23 @@ export default function Blog() {
                             </div>
 
                             {/* Title on Image */}
-                            <h2 className="absolute bottom-3 left-4 right-4 text-xl font-bold text-white leading-tight">
+                            <motion.h2 
+                              variants={itemVariants} // Stagger item
+                              className="font-display absolute bottom-3 left-4 right-4 text-xl font-bold text-white leading-tight z-[2]"
+                            >
                               {post.title}
-                            </h2>
-                          </div>
+                            </motion.h2>
+                          </motion.div>
                         )}
                         
-                        <div className="p-4">
+                        <motion.div 
+                          className="p-4 relative z-[1]" // Ensure content is above shine
+                          variants={contentContainerVariants} // Stagger container for children
+                          initial="hidden"
+                          animate="visible" // Animate when card becomes visible
+                        >
                           {/* Stats Row */}
-                          <div className="flex items-center justify-between mb-4 text-xs">
+                          <motion.div variants={itemVariants} className="flex items-center justify-between mb-4 text-xs">
                             <div className="flex items-center gap-2">
                               <span className="px-2.5 py-1 bg-emerald-50 text-emerald-700 rounded-full font-medium border border-emerald-100/50">
                                 {post.trekDetails.difficulty}
@@ -169,16 +198,16 @@ export default function Blog() {
                                 <p className="text-emerald-600 text-xs font-medium">{getReadingTime(post.content)} min read</p>
                               </div>
                             </div>
-                            <div className="flex items-center text-emerald-600 group">
+                            <motion.div variants={itemVariants} className="flex items-center text-emerald-600 group">
                               <span className="text-sm font-medium mr-1.5 group-hover:mr-2 transition-all">Read</span>
                               <svg className="w-4 h-4 transition-transform group-hover:translate-x-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
                               </svg>
-                            </div>
-                          </div>
-                        </div>
-                      </motion.div>
-                    </Link>
+                            </motion.div>
+                          </motion.div>
+                        </motion.div>
+                      </div>
+                    </motion.custom>
                   </div>
                 </div>
 
@@ -263,31 +292,57 @@ export default function Blog() {
                   </div>
 
                   {/* Card Column - With white background */}
-                  <Link 
+                  <motion.custom // Wrap Link with motion.custom
+                    as={Link}
                     href={`/blog/${post._id}`} 
-                    className={`w-[calc(50%-1rem)] relative z-10 ${index % 2 === 0 ? 'order-3' : 'order-1'}`}
+                    className={`w-[calc(50%-1rem)] relative z-10 group ${index % 2 === 0 ? 'order-3' : 'order-1'}`} // Added group for shine hover state
+                    whileHover={{ 
+                      y: -6, 
+                      boxShadow: "0px 15px 25px -8px rgba(0,0,0,0.1), 0px 8px 10px -6px rgba(0,0,0,0.08)"
+                    }}
+                    transition={{ duration: 0.2, ease: "easeOut" }}
                   >
-                    <div className="bg-white rounded-xl border border-slate-100 overflow-hidden hover:border-emerald-200 transition-all duration-300 transform hover:-translate-y-1">
+                    <div className="bg-white rounded-xl border border-slate-100 overflow-hidden transition-colors duration-300 hover:border-emerald-200"> {/* Removed transform and hover:-translate-y-1 */}
+                      <motion.div // Shine Effect Div
+                        className="absolute inset-0 z-10"
+                        style={{
+                          backgroundImage: "linear-gradient(110deg, transparent 30%, rgba(255,255,255,0.15) 50%, transparent 70%)",
+                          backgroundSize: "200% 100%",
+                        }}
+                        variants={shineVariants}
+                        initial="rest"
+                        whileHover="hover" // Will trigger when parent motion.custom(Link) is hovered
+                      />
                       {post.image && (
-                        <div className="relative h-[400px] overflow-hidden">
+                        <motion.div 
+                          className="relative h-[400px] overflow-hidden"
+                          variants={imageAppearVariants} // Use defined variants
+                          initial="initial" // Explicitly set initial and animate for children of staggered container
+                          animate="animate"
+                        >
                           <Image 
                             src={post.image} 
                             alt={post.title}
                             fill
-                            className="object-cover transition-transform duration-300 hover:scale-105"
+                            className="object-cover" // Removed hover:scale-105
                           />
-                        </div>
+                        </motion.div>
                       )}
-                      <div className="p-8">
-                        <h2 className="text-3xl font-bold text-slate-800 mb-4 line-clamp-2 leading-tight">
+                      <motion.div 
+                        className="p-8 relative z-[1]" // Ensure content is above shine
+                        variants={contentContainerVariants} // Stagger container for children
+                        initial="hidden"
+                        animate="visible"
+                      >
+                        <motion.h2 variants={itemVariants} className="font-display text-3xl font-bold text-slate-800 mb-4 line-clamp-2 leading-tight">
                           {post.title}
-                        </h2>
-                        <p className="text-slate-600 line-clamp-3 text-base mb-4 leading-relaxed">
+                        </motion.h2>
+                        <motion.p variants={itemVariants} className="text-slate-600 line-clamp-3 text-base mb-4 leading-relaxed">
                           {stripHtml(post.content)}
-                        </p>
-                        <div className="inline-flex items-center text-emerald-600 font-medium text-sm group">
+                        </motion.p>
+                        <motion.div variants={itemVariants} className="inline-flex items-center text-emerald-600 font-medium text-sm group">
                           Read Story
-                          <svg className="w-4 h-4 ml-1 transition-transform group-hover:translate-x-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <motion.svg className="w-4 h-4 ml-1 transition-transform group-hover:translate-x-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
                           </svg>
                         </div>

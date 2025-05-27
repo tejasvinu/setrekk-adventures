@@ -3,6 +3,9 @@ import { useState, Suspense } from 'react';
 import { signIn } from 'next-auth/react';
 import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
+import { motion } from 'framer-motion';
+
+import { AnimatedInput } from '@/components/AnimatedInput';
 
 // Rename the original component to LoginContent.
 function LoginContent() {
@@ -41,7 +44,12 @@ function LoginContent() {
 
   return (
     <div className="min-h-screen flex items-center justify-center px-4">
-      <div className="max-w-md w-full space-y-8 p-8 bg-slate-800/50 backdrop-blur-xl rounded-2xl border border-slate-700">
+      <motion.div 
+        className="max-w-md w-full space-y-8 p-8 bg-slate-800/50 backdrop-blur-xl rounded-2xl border border-slate-700"
+        initial={{ opacity: 0, y: 25, scale: 0.98 }}
+        animate={{ opacity: 1, y: 0, scale: 1 }}
+        transition={{ duration: 0.5, ease: "easeOut", delay: 0.1 }}
+      >
         <div>
           <h2 className="text-3xl font-bold text-center text-white mb-2">Welcome Back</h2>
           <p className="text-center text-emerald-400">Sign in to your account</p>
@@ -61,16 +69,13 @@ function LoginContent() {
 
         <form onSubmit={handleSubmit} className="space-y-6">
           <div>
-            <label htmlFor="email" className="block text-sm font-medium text-slate-300 mb-2">
-              Email Address
-            </label>
-            <input
+            <AnimatedInput
+              label="Email Address"
               id="email"
               type="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               required
-              className="w-full px-4 py-2 bg-slate-700/50 border border-slate-600 rounded-lg text-white placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-emerald-500"
               placeholder="you@example.com"
             />
           </div>
@@ -107,7 +112,7 @@ function LoginContent() {
             Register
           </Link>
         </p>
-      </div>
+      </motion.div>
     </div>
   );
 }
