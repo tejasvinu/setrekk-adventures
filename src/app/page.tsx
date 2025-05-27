@@ -290,25 +290,58 @@ export default function Home() {
       {/* Features Section */}
       <section className="py-20 bg-slate-900 text-white relative">
         <div className="container mx-auto px-6">
-          <h2 className="font-display text-4xl font-bold mb-16 text-center">Why Trek with Us</h2>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-12">
+          <motion.h2 
+            className="font-display text-4xl font-bold mb-16 text-center"
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, amount: 0.3 }}
+            transition={{ duration: 0.5, ease: "easeOut" }}
+          >
+            Why Trek with Us
+          </motion.h2>
+          <motion.div 
+            className="grid grid-cols-1 md:grid-cols-3 gap-12"
+            variants={gridContainerVariants}
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true, amount: 0.2 }} // Trigger when 20% of the grid is visible
+          >
             {features.map((feature) => (
               <motion.div
                 key={feature.title}
-                whileHover={{ scale: 1.05 }}
-                className="relative"
+                variants={featureCardVariants} // Card itself animates based on parent stagger
+                // whileHover={{ scale: 1.05 }} // This can be kept
+                className="relative group" // Added group for potential future use
               >
-                <div className="absolute -inset-0.5 bg-gradient-to-r from-emerald-600 to-emerald-400 rounded-lg blur opacity-30" />
-                <div className="relative bg-slate-800 p-8 rounded-lg">
-                  <div className="w-12 h-12 text-emerald-400 mb-6">
+                <motion.div 
+                  className="absolute -inset-0.5 bg-gradient-to-r from-emerald-600 to-emerald-400 rounded-lg blur opacity-30 group-hover:opacity-50 transition-opacity duration-300"
+                  initial={{ opacity:0 }}
+                  animate={{ opacity: 0.3 }} // Animate with the card, or slightly after
+                  transition={{ delay: 0.2, duration: 0.4}}
+                />
+                <div className="relative bg-slate-800 p-8 rounded-lg overflow-hidden"> {/* Added overflow-hidden for content animations */}
+                  <motion.div 
+                    className="w-12 h-12 text-emerald-400 mb-6"
+                    variants={iconVariants} // Animated icon
+                  >
                     {feature.icon}
-                  </div>
-                  <h3 className="text-xl font-bold mb-4">{feature.title}</h3>
-                  <p className="text-slate-400">{feature.description}</p>
+                  </motion.div>
+                  <motion.h3 
+                    className="text-xl font-bold mb-4"
+                    variants={textTitleVariants} // Animated title
+                  >
+                    {feature.title}
+                  </motion.h3>
+                  <motion.p 
+                    className="text-slate-400"
+                    variants={textDescriptionVariants} // Animated description
+                  >
+                    {feature.description}
+                  </motion.p>
                 </div>
               </motion.div>
             ))}
-          </div>
+          </motion.div>
         </div>
       </section>
 

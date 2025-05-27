@@ -28,6 +28,45 @@ export default function Blog() {
       .then(setPosts);
   }, []);
 
+  const cardEntryVariants = {
+    initial: { opacity: 0, y: 20 },
+    animate: (i: number) => ({ 
+      opacity: 1, 
+      y: 0, 
+      transition: { delay: i * 0.1, duration: 0.4, ease: "easeOut" } 
+    }),
+  };
+
+  const imageAppearVariants = {
+    initial: { scale: 1.1, opacity: 0.7 },
+    animate: { 
+      scale: 1, 
+      opacity: 1, 
+      transition: { duration: 0.5, ease: "easeOut", delay: 0.15 }
+    },
+  };
+  
+  const contentContainerVariants = {
+    hidden: { opacity: 0 },
+    visible: {
+      opacity: 1,
+      transition: { staggerChildren: 0.1, delayChildren: 0.25 } 
+    }
+  };
+
+  const itemVariants = {
+    hidden: { opacity: 0, y: 10 },
+    visible: { opacity: 1, y: 0, transition: { duration: 0.3, ease: 'easeOut' }}
+  };
+
+  const shineVariants = {
+    rest: { backgroundPosition: "200% 0" },
+    hover: {
+      backgroundPosition: ["-200% 0", "200% 0"],
+      transition: { duration: 1.2, ease: "linear", repeat: Infinity, repeatDelay: 0.3 }
+    }
+  };
+
   return (
     <div className="min-h-screen bg-slate-50">
       {/* Hero Section */}

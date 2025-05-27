@@ -33,22 +33,50 @@ export default function About() {
       </section>
 
       {/* About Content Section */}
-      <section className="py-12 md:py-20 bg-slate-50">
+      <motion.section 
+        className="py-12 md:py-20 bg-slate-50"
+        initial="hidden"
+        whileInView="visible"
+        viewport={{ once: true, amount: 0.15 }}
+        variants={{
+          hidden: {},
+          visible: { transition: { staggerChildren: 0.2, delayChildren: 0.1 } }
+        }}
+      >
         <div className="container mx-auto px-4 md:px-6">
-          <div className="max-w-4xl mx-auto">
-             <h2 className="font-display text-3xl md:text-4xl font-bold mb-6 text-slate-800">
+          <motion.div 
+            className="max-w-4xl mx-auto"
+          >
+            <motion.h2 
+              className="font-display text-3xl md:text-4xl font-bold mb-6 text-slate-800"
+              variants={{
+                hidden: { opacity: 0, x: -50 },
+                visible: { opacity: 1, x: 0, transition: { duration: 0.5, ease: "easeOut" } }
+              }}
+            >
               Who We Are
-            </h2>
-            <p className="text-lg text-slate-700 mb-4">
-              {/* ...existing content... */}
+            </motion.h2>
+            <motion.p 
+              className="text-lg text-slate-700 mb-4"
+              variants={{
+                hidden: { opacity: 0, x: -40 },
+                visible: { opacity: 1, x: 0, transition: { duration: 0.5, ease: "easeOut" } }
+              }}
+            >
               We are a team of passionate adventurers dedicated to providing authentic and unforgettable trekking experiences. With certified guides and meticulously curated routes, your journey with us is designed for safety, exploration, and discovery.
-            </p>
-            <p className="text-lg text-slate-700">
+            </motion.p>
+            <motion.p 
+              className="text-lg text-slate-700"
+              variants={{
+                hidden: { opacity: 0, x: -30 },
+                visible: { opacity: 1, x: 0, transition: { duration: 0.5, ease: "easeOut" } }
+              }}
+            >
               Our journey began with a deep love for the mountains and a desire to share their mystique with the world. Today, our treks connect cultures, challenge limits, and create lifelong memories.
-            </p>
-          </div>
+            </motion.p>
+          </motion.div>
         </div>
-      </section>
+      </motion.section>
 
       {/* Team Section */}
       <TeamCard />

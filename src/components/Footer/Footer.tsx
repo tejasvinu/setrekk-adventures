@@ -33,7 +33,24 @@ function Footer() {
     };
 
     return (
-        <footer className="bg-gradient-to-b from-slate-900 to-slate-950 border-t border-slate-800/50 pt-16 pb-8">
+        <motion.footer 
+            className="relative overflow-hidden bg-gradient-to-b from-slate-900 to-slate-950 border-t border-slate-800/50 pt-16 pb-8 text-slate-700" // Added relative, overflow-hidden, and text-slate-700 for pattern color
+            style={{
+                backgroundImage: "url(/mountain-pattern.svg)",
+                backgroundRepeat: "repeat",
+                backgroundSize: "150px", // Example size, adjust as needed
+            }}
+            animate={{
+                backgroundPositionX: ["0px", "150px"], // Panning effect matching backgroundSize
+            }}
+            transition={{
+                duration: 25, // Slow panning
+                ease: "linear",
+                repeat: Infinity,
+                repeatType: "loop",
+            }}
+        >
+            {/* Inner container to ensure content is not directly affected by parent's text color for SVG pattern */}
             <motion.div 
                 variants={footerAnimation}
                 initial="hidden"
