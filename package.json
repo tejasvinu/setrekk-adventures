@@ -25,6 +25,7 @@
     "@vercel/speed-insights": "^1.2.0",
     "bcryptjs": "^2.4.3",
     "clipboard": "^2.0.11",
+    "date-fns": "^4.1.0",
     "framer-motion": "^12.4.7",
     "mongodb": "^6.13.0",
     "next": "15.1.4",
